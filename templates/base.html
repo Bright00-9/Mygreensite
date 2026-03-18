@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Komado GreenOps</title>
+    <style>body { background-color: #0f172a; color: white; font-family: sans-serif; }</style>
+</head>
+<body class="p-4 pb-24">
+  <div>
+    {% if request.user.is_authenticated %}
+      <div>
+        <span>Hi, {{ request.user.username }}!</span>
+        <a href="{% url 'users:logout' %}"><button class="out-but">Logout</button></a>
+      </div><br>
+      <nav class="flex justify-between items-center mb-6">
+        <h1 class="text-green-400 font-bold text-xl">KOMADO</h1>
+        <a href="{% url 'dashboard:export' %}" class="bg-slate-800 border border-slate-600 px-3 py-1 rounded text-xs">PDF</a>
+      </nav>
+      <footer class="fixed bottom-0 left-0 w-full bg-slate-900 border-t border-slate-800 flex justify-around p-4">
+        <a href="{% url 'dashboard:mainboard' %}" class="text-green-500"><i class="fas fa-chart-line"></i></a>
+        <a href="{% url 'dashboard:zombies' %}" class="text-slate-400"><i class="fas fa-ghost"></i></a>
+        <a href="{% url 'dashboard:shield' %}" class="text-slate-400"><i class="fas fa-shield-alt"></i></a>
+        <a href="{% url 'dashboard:forum' %}" class="text-slate-400"><i class="fas fa-comment"></i></a>
+      </footer>
+    {% else %}
+      {% if request.path == '/' %}
+        <a href="{% url 'users:login' %}">Login</a>
+        <a href="{% url 'users:register' %}">Register</a>
+        <div class="glass-card">
+          <h1 class="text-green-400 font-bold text-xl">KOMADO</h1>
+          <h1>Explore The Cloud & Share Cool Ideas</h1><br>
+          <button class="cool-btn">____ Get Started ____</button>
+          <div class="glass-card">
+            <span class="quest">Already have an account?</span><br>
+            <a href="{% url 'users:login' %}"><button class="cool-btn">login</button></a>
+            <br><br><br><br>
+            <span class="quest">Get registered</span><br>
+            <a href="{% url 'users:register' %}"><button class="cool-btn">Register</button></a>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  {% if messages %}
+    {% for message in messages %}
+      <p class="glass-card">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+</body>
+</html>
+

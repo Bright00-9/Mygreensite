@@ -1,0 +1,242 @@
+/* Custom GreenOps Theme */
+:root {
+    --primary-green: #22c55e;
+    --dark-bg: #0f172a;
+    --card-bg: #1e293b;
+    --glass: rgba(30, 41, 59, 0.7);
+}
+
+body {
+    background-color: var(--dark-bg);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+/* Glassmorphism Effect */
+.glass-card {
+    background: rgba(255, 255, 255, 0.05); /* Very transparent white */
+    backdrop-filter: blur(15px); /* This creates the frosty blur effect */
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle "edge" of the glass */
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    color: #ffffff;
+    max-width: 400px;
+    margin: 100px auto;
+    text-align: center;
+}
+
+
+.cool-btn {
+    background: linear-gradient(45deg, #ff0055, #00ffcc);
+    border: none;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+}
+
+.cool-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 0, 85, 0.6);
+}
+
+div a {
+    margin-right: 15px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+form input, form textarea {
+    margin-bottom: 10px;
+    width: 100%;       /* Takes up the full width of its container */
+    max-width: 400px;  /* But never gets wider than 400px */
+    display: block;
+    box-sizing: border-box; /* Ensures padding doesn't break the width */
+}
+
+
+
+/* Neon Glow for Green Score */
+.glow-green {
+    filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.4));
+}
+
+/* Modern Smooth Scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+}
+::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+}
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+}
+
+/* Button Pulse Animation */
+.btn-pulse:active {
+    transform: scale(0.95);
+}
+
+/* Bottom Nav Styling */
+.bottom-nav {
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(15px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Dashboard Card Hover */
+.stat-card {
+    transition: all 0.3s ease;
+}
+.stat-card:hover {
+    border-color: var(--primary-green);
+    transform: translateY(-2px);
+}
+
+.input-box {
+  position: relative;
+  margin: 20px 0;
+}
+.input-box input{
+  width: 100%;
+  padding: 12px 15px;
+  background: none;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 18px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  transition: 0.5s;
+}
+.input-box input:focus {
+  border-color: #00ffff;
+  box-shadow: 0 5px 5px rgba(0, 255, 255, 0.3);
+}
+.input-box span {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  color: rgba(225, 225, 225, 0.5);
+  font-size: 16px;
+  pointer-events: none;
+  transition: 0.4s;
+  transform: translateY(-50%);
+}
+.input-box input:focus + span,
+.input-box input:not(:placeholder-shown) + span {
+  top: 5px;
+  font-size: 12px;
+  #00ffff
+}
+.submit-but {
+  background: linear-gradient(90deg, #00ffff, #00ff80);
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.4s;
+  margin-top: 10px;
+}
+.submit-but:hover {
+  background: linear-gradient(90deg, #00ff80, #00ffff);
+  box-shadow: 0 5px 15px #00ffff80;
+}
+
+.out-but {
+  background: linear-gradient(90deg, pink, red);
+  border: none;
+  border-radius: 1px;
+  color: #000;
+  padding: 0 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.4s;
+  margin-left: 154px;
+}
+
+/* Container to center everything on the screen */
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #0f172a; /* Deep Dark Blue/Black */
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    padding: 20px;
+}
+
+/* The Card */
+.form-card {
+    background: #1e293b;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.form-card h1 {
+    color: #f8fafc;
+    margin-bottom: 8px;
+    font-size: 24px;
+}
+
+.subtitle {
+    color: green;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* Hide the long "Required..." and password rule messages */
+.form-fields .helptext {
+    display: none;
+}
+
+/* Optional: If there are error messages, make them look nice */
+.errorlist {
+    color: #ff4d4d;
+    list-style: none;
+    padding: 0;
+    font-size: 13px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+/* The Submit Button */
+.submit-but {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    margin-top: 10px;
+}
+
+.submit-but:active {
+    transform: scale(0.98);
+}
+
+.footer-links p {
+    margin-top: 25px;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.footer-links a {
+    color: #22c55e;
+    text-decoration: none;
+    font-weight: 600;
+}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="POST" class="mb-8">
+    {% csrf_token %}
+    <textarea name="content" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm focus:outline-none focus:border-green-500" placeholder="Share a GreenOps tip..."></textarea>
+    <button type="submit" class="w-full mt-2 bg-green-600 py-2 rounded-xl font-bold text-sm">POST TO FORUM</button>
+</form>
+<div class="post-grid">
+  <div class="space-y-4">
+    {% for p in posts %}
+      <div class="post-card">
+        <div class="bg-slate-800 p-4 rounded-xl border-l-2 border-green-500">
+          <p class="text-xs text-green-400 font-bold mb-1">@ {{ request.user.username }}</p>
+          <p class="text-sm text-slate-300">{{ p.content }}</p>
+          <p class="text-xs text-gray-500">{{ p.created_at|date:"M d, Y" }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

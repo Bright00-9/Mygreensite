@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="glass-card">
+  <h1>Login</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div class="input-box">
+      <input type="text" name="username" placeholder="" required><span>Username</span>
+    </div><br>
+    <div class="input-box">
+      <input type="password" name="password" placeholder="" required><span>Password</span>
+    </div><br>
+    <div>
+      <button class="submit-but" type="submit">Login</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

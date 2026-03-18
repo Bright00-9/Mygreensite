@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="glass-card">
+    <div>
+        <div>
+          <h1>Create Account</h1>
+          <p class="subtitle">Join the Komado FinOps Family</p>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="input-box">
+                {{ form.as_p }}
+            </div>
+            <button class="submit-but" type="submit">Register</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

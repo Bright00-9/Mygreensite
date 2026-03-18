@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+    <div class="flex items-center mb-6">
+        <i class="fas fa-shield-alt text-3xl text-green-500 mr-4"></i>
+        <div>
+            <h2 class="text-lg font-bold">Smart Shield</h2>
+            <p class="text-xs text-slate-400">Non-Prod Uptime Scheduler</p>
+        </div>
+    </div>
+    <div class="bg-slate-900 p-4 rounded-lg">
+        <div class="flex justify-between text-xs mb-4 text-slate-400">
+            <span>Status: <span class="text-green-500 font-bold uppercase">Active</span></span>
+            <span>Range: 06:00 - 20:00</span>
+        </div>
+        <div class="h-2 w-full bg-slate-700 rounded-full overflow-hidden flex">
+            <div class="w-1/4 bg-slate-800 h-full"></div>
+            <div class="w-2/4 bg-green-500 h-full"></div>
+            <div class="w-1/4 bg-slate-800 h-full"></div>
+        </div>
+    </div>
+    <p class="text-[10px] text-slate-500 mt-4 text-center">Saving ~58% on instance costs monthly.</p>
+</div>
+
+  <h1 class="text-3xl font-bold text-blue-400 mb-6">Smart Shield Scheduler</h1>
+
+  {% if status %}
+    <div class="bg-blue-900/50 p-4 rounded mb-6 border border-blue-500 text-blue-200">
+      {{ status }}
+    </div>
+  {% endif %}
+
+  <div class="bg-gray-900 p-6 rounded-xl border border-gray-800">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-gray-400 mb-2">Select Instance</label>
+                <select name="instance_id" class="w-full bg-gray-800 p-2 rounded border border-gray-700">
+                    {% for r in resources %}
+                    <option value="{{ r.id }}">{{ r.id }} ({{ r.type }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-400 mb-2">Start Time (24h)</label>
+                <input type="text" name="start_time" placeholder="0600" class="w-full bg-gray-800 p-2 rounded border border-gray-700">
+            </div>
+            <div>
+                <label class="block text-gray-400 mb-2">End Time (24h)</label>
+                <input type="text" name="end_time" placeholder="2000" class="w-full bg-gray-800 p-2 rounded border border-gray-700">
+            </div>
+        </div>
+        <button class="mt-6 bg-blue-600 hover:bg-blue-500 px-8 py-2 rounded font-bold">Apply Shield Schedule</button>
+    </form>
+  </div>
+{% endblock %}
