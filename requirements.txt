@@ -1,0 +1,14 @@
+django
+boto3
+botocore
+moto[ec2,s3,cloudwatch,iam]
+pandas
+matplotlib
+openslab
+python-dotenv
+gunicorn
+dj-database-url
+psycopg2-binary
+whitenoise
+celery
+redis
