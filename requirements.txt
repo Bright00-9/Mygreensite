@@ -4,7 +4,7 @@ botocore
 moto[ec2,s3,cloudwatch,iam]
 pandas
 matplotlib
-openslab
+openpyxl
 python-dotenv
 gunicorn
 dj-database-url
