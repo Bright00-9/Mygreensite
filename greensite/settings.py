@@ -37,6 +37,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -120,15 +121,8 @@ USE_I18N = True
 USE_TZ = True
 
 
-
-# --- STATIC FILES (For Render) ---
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [] 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Where Render will put files
 
-# Add WhiteNoise to your MIDDLEWARE (right after SecurityMiddleware)
-# MIDDLEWARE = [
-#     'django.middleware.security.SecurityMiddleware',
-#     'whitenoise.middleware.WhiteNoiseMiddleware', 
-#     ...
-# ]
+# This tells WhiteNoise to compress the files for speed
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
