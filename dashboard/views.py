@@ -149,7 +149,7 @@ def shield_scheduler(request):
 @login_required
 def forum_view(request):
     if request.method == "POST":
-        Post.objects.create(content=request.POST.get('content'))
+        content=request.POST.get('content'))
         if content:
             Post.objects.create(author=request.user, content=content)
         return redirect('dashboard:forum')
