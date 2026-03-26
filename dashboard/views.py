@@ -151,7 +151,7 @@ def forum_view(request):
     if request.method == "POST":
         content=request.POST.get('content')
         if content:
-            Post.objects.create(author_id=request.user, content=content)
+            Post.objects.create(author_id=request.user.id, content=content)
         return redirect('dashboard:forum')
     posts = Post.objects.all().order_by('-created_at')
     return render(request, 'dashboard/posts.html', {'posts': posts})
