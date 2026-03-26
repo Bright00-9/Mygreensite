@@ -162,7 +162,7 @@ def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id, author=request.user)
     if request.method == "POST":
         post.delete()
-     return redirect('dashboard:forum')
+    return redirect('dashboard:forum')
     
 @login_required
 def api_rightsize(request, res_id):
