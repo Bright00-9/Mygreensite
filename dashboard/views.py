@@ -150,9 +150,19 @@ def shield_scheduler(request):
 def forum_view(request):
     if request.method == "POST":
         Post.objects.create(content=request.POST.get('content'))
+        if content:
+            Post.objects.create(author=request.user, content=content)
         return redirect('dashboard:forum')
     posts = Post.objects.all().order_by('-created_at')
     return render(request, 'dashboard/posts.html', {'posts': posts})
+    
+@login_required
+def delete_post(request, post_id):
+    # SECURITY: Ensure only the author of the post can delete it
+    post = get_object_or_404(Post, id=post_id, author=request.user)
+    if request.method == "POST":
+        post.delete()
+     return redirect('dashboard:forum')
     
 @login_required
 def api_rightsize(request, res_id):

@@ -10,9 +10,15 @@
     {% for p in posts %}
       <div class="post-card">
         <div class="bg-slate-800 p-4 rounded-xl border-l-2 border-green-500">
-          <p class="text-xs text-green-400 font-bold mb-1">@ {{ request.user.username }}</p>
+          <p class="text-xs text-green-400 font-bold mb-1">@{{ p.author.username }}</p>
           <p class="text-sm text-slate-300">{{ p.content }}</p>
           <p class="text-xs text-gray-500">{{ p.created_at|date:"M d, Y" }}</p>
+          {% if p.author == request.user %}
+            <form action="{% url 'delete_post' p.id %}" method="POST" onsubmit="return confirm('Delete this post?');">
+              {% csrf_token %}
+              <button type="submit" class="text-red-500 hover:underline">Delete</button>
+            </form>
+          {% endif %}
         </div>
       </div>
     {% endfor %}
