@@ -127,15 +127,3 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Where Render will put file
 # This tells WhiteNoise to compress the files for speed
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
-import subprocess
-import sys
-
-# Force migration on startup since we can't use the Shell
-try:
-    print("Forcing Migration...")
-    subprocess.check_call([sys.executable, "manage.py", "makemigrations", "dashboard"])
-    subprocess.check_call([sys.executable, "manage.py", "migrate", "dashboard", "--fake-initial"])
-    print("Migration Successful")
-except Exception as e:
-    print(f"Migration Failed: {e}")
