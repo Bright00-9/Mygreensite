@@ -4,6 +4,7 @@ from .models import Resource, Post, Schedule
 from django.contrib.auth.decorators import login_required
 from .cloud_utils import render_to_pdf_report, scan_aws_full_report,fetch_cloud_data, get_boto_client,terminate_resource,get_finops_data,get_simulated_costs
 from moto import mock_aws
+from django.db import connection
 
 @login_required
 def dashboard_view(request):
@@ -101,13 +102,8 @@ def zombie_hunter(request):
         return redirect('zombie_hunter')
 
     return render(request, 'dashboard/zombies.html', {'zombies': zombies})
-  # Make sure this matches your filename
-
 def finops_dashboard(request):
-    # 1. Fetch the calculated data from your utility
     report_data = get_finops_data()
-    
-    # 2. Pass it to the template via the context dictionary
     context = {
         'chart_data': report_data,
     }
@@ -128,9 +124,7 @@ def shield_scheduler(request):
     if request.method == "POST":
         instance_id = request.POST.get("instance_id")
         start_time = request.POST.get("start_time") # e.g., "0600"
-        end_time = request.POST.get("end_time")     # e.g., "2000"
-        
-        # We apply tags that a Lambda function (or our logic) would read
+        end_time = request.POST.get("end_time")   
         ec2 = get_boto_client('ec2')
         ec2.create_tags(
             Resources=[instance_id],
@@ -161,6 +155,17 @@ def post_delete(request, id):
     post = get_object_or_404(Post, id=id, author=request.user)
     post.delete()
     return redirect('dashboard:forum')
+    
+
+def forum_view(request):
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute('ALTER TABLE dashboard_post ADD COLUMN IF NOT EXISTS creator_id integer;')
+            print("Successfully injected creator_id column!")
+        except Exception as e:
+            print(f"Manual injection note: {e}")
+    posts = Post.objects.all().order_by('-created_at')
+
     
 @login_required
 def api_rightsize(request, res_id):
