@@ -156,7 +156,7 @@ def post_delete(request, id):
     post.delete()
     return redirect('dashboard:forum')
     
-
+@login_required
 def forum_view(request):
     with connection.cursor() as cursor:
         try:
@@ -165,6 +165,7 @@ def forum_view(request):
         except Exception as e:
             print(f"Manual injection note: {e}")
     posts = Post.objects.all().order_by('-created_at')
+    return render(request, 'dashboard/posts.html', {'posts': posts})
 
     
 @login_required
