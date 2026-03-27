@@ -2,6 +2,18 @@ from django.urls import path
 from . import views
 
 app_name='dashboard'
+from django.core.management import call_command
+import logging
+
+# This runs the MOMENT the app starts on Render
+try:
+    print("FORCE MIGRATION STARTING...")
+    # This creates the 'author_id' column if it's missing
+    call_command('makemigrations', 'dashboard', interactive=False)
+    call_command('migrate', 'dashboard', interactive=False)
+    print("FORCE MIGRATION SUCCESSFUL!")
+except Exception as e:
+    print(f"FORCE MIGRATION ERROR: {e}")
 
 urlpatterns = [
     path('', views.dashboard_view, name='mainboard'),
