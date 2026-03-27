@@ -14,10 +14,11 @@
           <p class="text-sm text-slate-300">{{ p.content }}</p>
           <p class="text-xs text-gray-500">{{ p.created_at|date:"M d, Y" }}</p>
           {% if p.creator == request.user %}
-            <form action="{% url 'delete_post' p.id %}" method="POST" onsubmit="return confirm('Delete this post?');">
-              {% csrf_token %}
-              <button type="submit" class="text-red-500 hover:underline">Delete</button>
-            </form>
+              <form action="{% url 'delete_post' p.id %}" method="POST" class="mt-2" onsubmit="return confirm('Delete this post?');">
+                {% csrf_token %}
+                <button type="submit" class="text-xs text-red-500 hover:text-red-400 font-semibold">DELETE POST
+                </button>
+              </form>
           {% endif %}
         </div>
       </div>

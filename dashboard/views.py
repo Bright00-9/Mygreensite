@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
 from .models import Resource, Post, Schedule
 from django.contrib.auth.decorators import login_required
@@ -157,11 +157,18 @@ def forum_view(request):
 
     
 @login_required
-def post_delete(request, id):
-    post = get_object_or_404(Post, id=id, author=request.user)
-    post.delete()
+def delete_post(request, post_id):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, id=post_id)
+        if post.creator == request.user:
+            post.delete()
+            print(f"DEBUG: Post {post_id} deleted successfully.")
+        else:
+            print(f"DEBUG: Permission denied for user {request.user}")
+            
     return redirect('dashboard:forum')
-    
+
+
 @login_required
 def api_rightsize(request, res_id):
     r = Resource.objects.get(id=res_id)
