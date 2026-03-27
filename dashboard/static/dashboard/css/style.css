@@ -144,6 +144,15 @@ form input, form textarea {
   transition: 0.4s;
   margin-top: 10px;
 }
+
+.cont1 {
+    display: flex;
+    align-items: center; /* Vertical centering */
+    justify-content: space-between; /* This pushes items to the edges */
+    width: 100%;
+    padding: 10px 20px;
+}
+
 .submit-but:hover {
   background: linear-gradient(90deg, #00ff80, #00ffff);
   box-shadow: 0 5px 15px #00ffff80;
@@ -158,7 +167,7 @@ form input, form textarea {
   font-weight: bold;
   cursor: pointer;
   transition: 0.4s;
-  margin-left: 154px;
+  margin-left: auto;
 }
 
 /* Container to center everything on the screen */

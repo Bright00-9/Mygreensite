@@ -14,7 +14,7 @@
 <body class="p-4 pb-24">
   <div>
     {% if request.user.is_authenticated %}
-      <div>
+      <div class="cont1">
         <span>Hi, {{ request.user.username }}!</span>
         <a href="{% url 'users:logout' %}"><button class="out-but">Logout</button></a>
       </div><br>
