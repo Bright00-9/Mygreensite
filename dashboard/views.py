@@ -139,16 +139,22 @@ def shield_scheduler(request):
     return render(request, 'dashboard/shield.html', {'resources': resources, 'status': status})
     
 
-
 @login_required
 def forum_view(request):
-    if request.method == "POST":
-        Post.objects.create(content=request.POST.get('content'))
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        print(f"DEBUG: Attempting to save post. Content: {content[:20]}")
         if content and request.user.is_authenticated:
-           Post.objects.create(content=content, creator=request.user)
-        return redirect('dashboard:forum')
+            new_post = Post.objects.create(creator=request.user, content=content)
+            print(f"DEBUG: Post created with ID {new_post.id} by {request.user.username}")
+            return redirect('dashboard:forum')
+        else:
+            print("DEBUG: Post failed. Content empty or User not logged in.")
+    Post.objects.filter(creator__isnull=True).update(creator=request.user)
+
     posts = Post.objects.all().order_by('-created_at')
     return render(request, 'dashboard/posts.html', {'posts': posts})
+
     
 @login_required
 def post_delete(request, id):
