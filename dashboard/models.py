@@ -13,7 +13,7 @@ class Resource(models.Model):
     carbon_waste_kg = models.FloatField()
 
 class Post(models.Model):
-    author = models.ForeignKey('auth.User', on_delete=models.CASCADE, null=True, blank=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
