@@ -163,18 +163,6 @@ def post_delete(request, id):
     return redirect('dashboard:forum')
     
 @login_required
-def forum_view(request):
-    with connection.cursor() as cursor:
-        try:
-            cursor.execute('ALTER TABLE dashboard_post ADD COLUMN IF NOT EXISTS creator_id integer;')
-            print("Successfully injected creator_id column!")
-        except Exception as e:
-            print(f"Manual injection note: {e}")
-    posts = Post.objects.all().order_by('-created_at')
-    return render(request, 'dashboard/posts.html', {'posts': posts})
-
-    
-@login_required
 def api_rightsize(request, res_id):
     r = Resource.objects.get(id=res_id)
     r.current_size = r.recommended_size
