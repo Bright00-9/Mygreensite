@@ -5,7 +5,12 @@
     <textarea name="content" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm focus:outline-none focus:border-green-500" placeholder="Share a GreenOps tip..."></textarea>
     <button type="submit" class="w-full mt-2 bg-green-600 py-2 rounded-xl font-bold text-sm">POST TO FORUM</button>
 </form>
-<div class="post-grid">
+<div id="post-list" 
+     hx-get="{% url 'forum' %}" 
+     hx-trigger="every 10s" 
+     hx-select="#post-list" 
+     hx-swap="outerHTML"
+     class="post-grid">
   <div class="space-y-4">
     {% for p in posts %}
       <div class="post-card">
