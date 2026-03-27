@@ -6,7 +6,7 @@
     <button type="submit" class="w-full mt-2 bg-green-600 py-2 rounded-xl font-bold text-sm">POST TO FORUM</button>
 </form>
 <div id="post-list" 
-     hx-get="{% url 'forum' %}" 
+     hx-get="{% url 'dashboard:forum' %}" 
      hx-trigger="every 10s" 
      hx-select="#post-list" 
      hx-swap="outerHTML"
