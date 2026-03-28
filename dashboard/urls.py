@@ -24,5 +24,7 @@ urlpatterns = [
     path('rightsize/<int:res_id>/', views.api_rightsize, name='rightsize'),
     path('export/', views.download_report, name='export'),
     path('dashboard/', views.finops_dashboard, name='finops_dashboard'),
+    path('connect-aws/', views.connect_aws, name='connect_aws'),
+    path('run_manual_scan/', views.run_manual_scan, name='run_manual_scan'),
 ]
 
