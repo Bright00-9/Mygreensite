@@ -22,3 +22,15 @@ class Schedule(models.Model):
     is_active = models.BooleanField(default=True)
     start_time = models.CharField(max_length=5, default="06:00")
     end_time = models.CharField(max_length=5, default="20:00")
+
+
+class CloudConnection(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    provider = models.CharField(max_length=20, default='AWS')
+    access_key = models.CharField(max_length=255)
+    secret_key = models.CharField(max_length=255) # In a real app, we would encrypt this!
+    region = models.CharField(max_length=50, default='us-east-1')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.provider} ({self.region})"

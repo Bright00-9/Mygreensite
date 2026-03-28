@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
-from .models import Resource, Post, Schedule
+from .models import Resource, Post, Schedule, CloudConnection
 from django.contrib.auth.decorators import login_required
 from .cloud_utils import render_to_pdf_report, scan_aws_full_report,fetch_cloud_data, get_boto_client,terminate_resource,get_finops_data,get_simulated_costs
 from moto import mock_aws
@@ -191,4 +191,19 @@ def download_report(request):
     return response
 
 
-# Create your views here.
+def connect_aws(request):
+    if request.method == "POST":
+        access_key = request.POST.get('access_key')
+        secret_key = request.POST.get('secret_key')
+        region = request.POST.get('region')
+        
+        # Save or update the connection
+        conn, created = CloudConnection.objects.update_or_create(
+            user=request.user,
+            defaults={'access_key': access_key, 'secret_key': secret_key, 'region': region}
+        )
+        messages.success(request, "AWS Account Connected Successfully!")
+        return redirect('dashboard:forum')
+    
+    return render(request, 'dashboard/connect_aws.html')
+
