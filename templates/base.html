@@ -22,8 +22,8 @@
         <h1 class="text-green-400 font-bold text-xl">KOMADO</h1>
         <a href="{% url 'dashboard:export' %}" class="bg-slate-800 border border-slate-600 px-3 py-1 rounded text-xs">PDF</a>
         <div class="flex gap-4">
-            <a href="{% url 'connect_aws' %}" class="bg-blue-600 p-3 rounded-lg text-white font-bold">Connect AWS Accoun</a>
-            <a href="{% url 'run_manual_scan' %}" class="bg-green-600 p-3 rounded-lg text-white font-bold">Scan Infrastructure</a>
+            <a href="{% url 'dashboard:connect_aws' %}" class="bg-blue-600 p-3 rounded-lg text-white font-bold">Connect AWS Accoun</a>
+            <a href="{% url 'dashboard:run_manual_scan' %}" class="bg-green-600 p-3 rounded-lg text-white font-bold">Scan Infrastructure</a>
         </div>
       </nav>
       <footer class="fixed bottom-0 left-0 w-full bg-slate-900 border-t border-slate-800 flex justify-around p-4">
