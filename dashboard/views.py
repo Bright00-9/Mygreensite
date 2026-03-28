@@ -1,26 +1,53 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
-from .models import Resource, Post, Schedule, CloudConnection
+from .models import Resource, Post, Schedule, CloudConnection, ScanSummary, ZombieResource,
 from django.contrib.auth.decorators import login_required
+import boto3
+import jason
 from .cloud_utils import render_to_pdf_report, scan_aws_full_report,fetch_cloud_data, get_boto_client,terminate_resource,get_finops_data,get_simulated_costs
 from moto import mock_aws
 from django.db import connection
+from django.utils import timezone
+from datetime import timedelta
+  
 
-@login_required
-def dashboard_view(request):
-    res = Resource.objects.all()
-    total_spend = sum(r.monthly_cost for r in res) or 1
-    waste_spend = sum(r.monthly_cost for r in res.filter(is_unused=True))
-    green_score = round(((total_spend - waste_spend) / total_spend) * 100)
-    
+def dashboard_home(request):
+    # Get the last 7 days of data
+    last_week = timezone.now() - timedelta(days=7)
+    history = ScanSummary.objects.filter(
+        user=request.user, 
+        timestamp__gte=last_week
+    ).order_by('timestamp')
+
+    # Formatting data for Chart.js
+    labels = [s.timestamp.strftime("%a") for s in history] # "Mon", "Tue", etc.
+    costs = [s.total_cost for s in history]
+    carbon = [s.total_carbon for s in history]
+
+    # Latest Score for the Gauge
+    latest = history.last()
+    # Simplified Eco-Score (0-100). Lower carbon = higher score.
+    eco_score = max(0, 100 - (latest.total_carbon * 10)) if latest else 0
+
     context = {
-        'green_score': green_score,
-        'total_carbon': sum(r.carbon_waste_kg for r in res.filter(is_unused=True)),
-        'resources': res.filter(is_unused=False),
-        'score_offset': int(314 * (1 - (green_score / 100)))
+        'labels': labels,
+        'costs': costs,
+        'carbon': carbon,
+        'eco_score': eco_score,
+        'latest': latest
     }
-    return render(request, 'dashboard/index.html', context)
     
+    return render(request, 'dashboard/index.html', context)
+
+# dashboard/views.py
+
+def calculate_eco_score(total_carbon):
+    # Let's say 10kg CO2e is our "Max" limit for a good score
+    max_threshold = 10.0
+    score = 100 - (total_carbon / max_threshold * 100)
+    return max(0, min(100, score)) # Keep between 0 and 100
+
+
 @login_required
 @mock_aws
 def index(request):
@@ -47,68 +74,61 @@ def index(request):
         'fin_data': finance_values
     })
     
-  
-@mock_aws
-def get_finops_chart_data():
-    days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    in_use_daily = []
-    unused_daily = []
-    
-    # Get our fresh mock totals
-    hourly_in_use, hourly_unused = get_simulated_costs()
-    
-    for day in days:
-        # We multiply by 24 to get the daily cost
-        # Added random.uniform to make the graph look like a real "trend"
-        variation = random.uniform(0.85, 1.15)
-        in_use_daily.append(round(hourly_in_use * 24 * variation, 2))
-        unused_daily.append(round(hourly_unused * 24 * variation, 2))
 
-    return {
-        "labels": days,
-        "in_use": in_use_daily,
-        "unused": unused_daily
-    }
-#Replace this with your actual import if these are in cloudutils.py
-# from .cloudutils import get_finops_chart_data 
 
-@mock_aws
 def finops_dashboard(request):
-    # Simulating the Moto data directly here for clarity
-    days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    last_7_days = timezone.now() - timedelta(days=7)
+    data_points = ScanSummary.objects.filter(
+        user=request.user, 
+        timestamp__gte=last_7_days
+    ).order_by('timestamp')
+
+    # Convert to JSON for the script
+    context = {
+        'labels': json.dumps([dp.timestamp.strftime('%m/%d') for dp in data_points]),
+        'cost_data': json.dumps([float(dp.total_cost) for dp in data_points]),
+        'carbon_data': json.dumps([dp.total_carbon for dp in data_points]),
+    }
+    return render(request, 'dashboard/finops.html', context)
+
+
+
+
+
+
+def finops_dashboard(request):
+    seven_days_ago = timezone.now() - timedelta(days=7)
     
-    # Simulate realistic costs ($)
-    in_use_costs = [round(random.uniform(10, 15), 2) for _ in days]
-    unused_costs = [round(random.uniform(2, 7), 2) for _ in days]
+    # Get data for the chart
+    chart_data = ScanSummary.objects.filter(
+        user=request.user, 
+        timestamp__gte=seven_days_ago
+    ).order_by('timestamp')
+
+    # Prepare data for Chart.js
+    labels = [data.timestamp.strftime("%b %d") for data in chart_data]
+    costs = [data.total_cost for data in chart_data]
 
     context = {
-        'chart_data': {
-            'labels': days,
-            'in_use': in_use_costs,
-            'unused': unused_costs,
-        }
+        'labels': labels,
+        'costs': costs,
+        'latest_scan': chart_data.last(),
     }
-    
-    return render(request, 'dashboard.html', context)
+    return render(request, 'dashboard/finops.html', context)
 
-@mock_aws
-def zombie_hunter(request):
-    resources = fetch_cloud_data(use_mock=True)
-    zombies = [r for r in resources if r['is_zombie']]
-    
-    if request.method == "POST" and "terminate" in request.POST:
-        target_id = request.POST.get("instance_id")
-        terminate_resource(target_id)
-        return redirect('zombie_hunter')
+def zombie_graveyard(request):
+    zombies = ZombieResource.objects.filter(user=request.user, is_terminated=False)
+    return render(request, 'dashboard/.html', {'zombies': zombies})
 
-    return render(request, 'dashboard/zombies.html', {'zombies': zombies})
-def finops_dashboard(request):
-    report_data = get_finops_data()
-    context = {
-        'chart_data': report_data,
-    }
+
+def terminate_resource(request, zombie_id):
+    zombie = get_object_or_404(ZombieResource, id=zombie_id, user=request.user)
     
-    return render(request, 'dashboard/index.html', context)
+    zombie.is_terminated = True
+    zombie.save()
+    
+    messages.success(request, f"Resource {zombie.resource_id} has been exorcised!")
+    return redirect('zombie_graveyard')
 
 
 @login_required

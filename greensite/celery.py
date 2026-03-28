@@ -16,3 +16,11 @@ app.autodiscover_tasks()
 @app.task(bind=True)
 def debug_task(self):
     print(f'Request: {self.request!r}')
+
+# komado_project/celery.py
+app.conf.beat_schedule = {
+    'hunt-zombies-every-morning': {
+        'task': 'dashboard.tasks.hunt_for_zombies',
+        'schedule': 86400.0, # Runs once every 24 hours
+    },
+}

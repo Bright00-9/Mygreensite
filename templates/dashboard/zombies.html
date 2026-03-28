@@ -1,32 +1,46 @@
 {% extends 'base.html' %}
+
 {% block content %}
+<div class="p-6 bg-slate-950 min-h-screen text-white">
+    <h2 class="text-3xl font-bold mb-6 text-red-500">🪦 Zombie Graveyard</h2>
+    <p class="mb-6 text-slate-400">These resources are idle and wasting your budget. Select one to terminate.</p>
 
-<h1 class="text-3xl font-bold text-red-500 mb-6">Zombie Resource Hunter</h1>
-
-<div class="bg-gray-900 p-6 rounded-xl border border-red-900/30">
-    <table class="w-full text-left">
-        <thead>
-            <tr class="text-gray-500 border-b border-gray-800">
-                <th class="py-2">Instance ID</th>
-                <th>CPU Utilization</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-          {% for z in zombies %}
-            <tr class="border-b border-gray-800">
-                <td class="py-4">{{ z.id }}</td>
-                <td class="text-red-400">{{ z.cpu }}% (Critical Waste)</td>
-                <td>
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="instance_id" value="{{ z.id }}">
-                        <button name="terminate" class="bg-red-600 px-3 py-1 rounded text-xs hover:bg-red-500">Terminate</button>
-                    </form>
-                </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-    </table>
+    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-slate-800">
+                <tr>
+                    <th class="p-4">Resource ID</th>
+                    <th class="p-4">Type</th>
+                    <th class="p-4">Waste Reason</th>
+                    <th class="p-4">Savings Potential</th>
+                    <th class="p-4">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for zombie in zombies %}
+                <tr class="border-b border-slate-800 hover:bg-slate-800/50">
+                    <td class="p-4 font-mono">{{ zombie.resource_id }}</td>
+                    <td class="p-4">{{ zombie.resource_type }}</td>
+                    <td class="p-4 text-orange-400">{{ zombie.waste_reason }}</td>
+                    <td class="p-4 text-green-400">${{ zombie.potential_savings }}/mo</td>
+                    <td class="p-4">
+                        <form method="POST" action="{% url 'terminate_resource' zombie.id %}">
+                            {% csrf_token %}
+                            <button class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg text-xs font-bold">
+                                EXORCISE
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="p-10 text-center text-slate-500">
+                        No zombies found! Your cloud is clean. ✨
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

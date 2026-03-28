@@ -1,6 +1,7 @@
 import boto3
 from celery import shared_task
-from .models import CloudConnection
+from .models import CloudConnection, ZombieResource
+from .utils import calculate_carbon, calculate_carbon_impact
 
 @shared_task
 def scan_user_aws(user_id):
@@ -38,3 +39,59 @@ def scan_user_aws(user_id):
         'carbon': carbon_footprint_estimate,
         'zombies': total_instances - running_instances
     }
+
+
+@shared_task
+def hunt_for_zombies(user_id):
+    conn = CloudConnection.objects.get(user_id=user_id)
+    ec2 = boto3.client('ec2', aws_access_key_id=conn.access_key, 
+                       aws_secret_access_key=conn.secret_key, 
+                       region_name=conn.region)
+    cloudwatch = boto3.client('cloudwatch', ...) 
+
+    instances = ec2.describe_instances()
+
+    for res in instances['Reservations']:
+        for inst in res['Instances']:
+            instance_id = inst['InstanceId']
+            
+            # Check CloudWatch: Is CPU < 1% for 1 hour?
+            stats = cloudwatch.get_metric_statistics(
+                Namespace='AWS/EC2', MetricName='CPUUtilization',
+                Dimensions=[{'Name': 'InstanceId', 'Value': instance_id}],
+                StartTime=..., EndTime=..., Period=3600, Statistics=['Average']
+            )
+            
+            # If CPU is consistently low, mark as Zombie
+            if stats['Datapoints'] and stats['Datapoints'][0]['Average'] < 1.0:
+                ZombieResource.objects.update_or_create(
+                    resource_id=instance_id,
+                    defaults={
+                        'user_id': user_id,
+                        'resource_type': 'EC2',
+                        'waste_reason': 'CPU utilization < 1% for 1 hour',
+                        'potential_savings': 15.00 # Example cost
+                  carbon_impact = calculate_carbon('t3.medium', 24, conn.region)
+    
+                  ZombieResource.objects.update_or_create(
+                  resource_id=instance_id,
+                    defaults={
+                    'total_carbon': carbon_impact,
+                    }
+                )
+
+
+@shared_task
+def hunt_for_zombies(user_id):
+    # ... after identifying instance ...
+    instance_hours = 24 # Assuming we check daily
+    vcpus = 2 # Example: t3.medium has 2 vCPUs
+    
+    impact = calculate_carbon_impact('t3.medium', vcpus, instance_hours, conn.region)
+    
+    # Update or create summary
+    ScanSummary.objects.create(
+        user_id=user_id,
+        total_cost=current_cost,
+        total_carbon=impact
+    )

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="bg-slate-900/50 backdrop-blur-md p-6 rounded-3xl border border-slate-800 shadow-2xl">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold text-white">Resource Efficiency</h3>
+        <span class="text-xs text-slate-400 font-mono">LIVE TELEMETRY</span>
+    </div>
+    
+    <div class="h-64">
+        <canvas id="komadoFinOpsChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('komadoFinOpsChart').getContext('2d');
+    
+    // Create a Gradient for the cost fill
+    const costGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    costGradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
+    costGradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ labels|safe }},
+            datasets: [
+                {
+                    label: 'AWS Cost ($)',
+                    data: {{ cost_data|safe }},
+                    borderColor: '#3b82f6', // Bright Blue
+                    backgroundColor: costGradient,
+                    fill: true,
+                    tension: 0.4,
+                    yAxisID: 'yCost',
+                },
+                {
+                    label: 'Carbon (kgCO2e)',
+                    data: {{ carbon_data|safe }},
+                    borderColor: '#10b981', // Emerald Green
+                    borderDash: [5, 5], // Dashed line for distinction
+                    tension: 0.4,
+                    yAxisID: 'yCarbon',
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                yCost: {
+                    type: 'linear',
+                    position: 'left',
+                    grid: { color: '#1e293b' },
+                    ticks: { color: '#3b82f6', callback: (v) => '$' + v }
+                },
+                yCarbon: {
+                    type: 'linear',
+                    position: 'right',
+                    grid: { drawOnChartArea: false }, // Hide duplicate grid lines
+                    ticks: { color: '#10b981', callback: (v) => v + 'kg' }
+                },
+                x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+            },
+            plugins: {
+                legend: { labels: { color: '#f8fafc', font: { family: 'monospace' } } }
+            }
+        }
+    });
+</script>
+{% endblock %}
