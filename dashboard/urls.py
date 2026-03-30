@@ -16,7 +16,7 @@ except Exception as e:
     print(f"FORCE MIGRATION ERROR: {e}")
 
 urlpatterns = [
-    path('', views.dashboard_view, name='mainboard'),
+    path('', views.dashboard_home, name='mainboard'),
     path('zombies/', views.zombie_hunter, name='zombies'),
     path('shield/', views.shield_view, name='shield'),
     path('forum/', views.forum_view, name='forum'),
