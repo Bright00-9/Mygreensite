@@ -9,6 +9,7 @@ from moto import mock_aws
 from django.db import connection
 from django.utils import timezone
 from datetime import timedelta
+from .tasks import scan_user_aws
   
 
 def dashboard_home(request):
@@ -226,4 +227,16 @@ def connect_aws(request):
         return redirect('dashboard:forum')
     
     return render(request, 'dashboard/connect_aws.html')
+
+def run_manual_scan(request):
+    if request.method == "POST":
+        # Pass the user ID so the task knows which AWS keys to pull from your database
+        scan_user_aws.delay(request.user.id)
+        
+        # Give the user feedback
+        from django.contrib import messages
+        messages.success(request, "Initiating full account scan...")
+        
+        return redirect('dashboard_home')
+    return redirect('dashboard_home')
 

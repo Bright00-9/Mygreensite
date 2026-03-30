@@ -79,19 +79,10 @@ def hunt_for_zombies(user_id):
                     'total_carbon': carbon_impact,
                     }
                 )
+                   ScanSummary.objects.create(
+                       user_id=user_id,
+                       total_cost  =current_cost,
+                        total_carbon=impact
+                     )
 
 
-@shared_task
-def hunt_for_zombies(user_id):
-    # ... after identifying instance ...
-    instance_hours = 24 # Assuming we check daily
-    vcpus = 2 # Example: t3.medium has 2 vCPUs
-    
-    impact = calculate_carbon_impact('t3.medium', vcpus, instance_hours, conn.region)
-    
-    # Update or create summary
-    ScanSummary.objects.create(
-        user_id=user_id,
-        total_cost=current_cost,
-        total_carbon=impact
-    )
