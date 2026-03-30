@@ -41,6 +41,7 @@ def scan_user_aws(user_id):
     }
 
 
+
 @shared_task
 def hunt_for_zombies(user_id):
     conn = CloudConnection.objects.get(user_id=user_id)
@@ -63,25 +64,23 @@ def hunt_for_zombies(user_id):
             )
             
             # If CPU is consistently low, mark as Zombie
-           if stats['Datapoints'] and stats['Datapoints'][0]['Average'] < 1.0:
+            if stats['Datapoints'] and stats['Datapoints'][0]['Average'] < 1.0:
                 carbon_impact = calculate_carbon('t3.medium', 24, conn.region)
     
                 ZombieResource.objects.update_or_create(
                     resource_id=instance_id,
                     defaults={
-                      'user_id': user_id,
-                      'resource_type': 'EC2',
-                      'waste_reason': 'CPU utilization < 1% for 1 hour',
-                      'potential_savings': 15.00, # Example cost
-                      'total_carbon': carbon_impact,
+                        'user_id': user_id,
+                        'resource_type': 'EC2',
+                        'waste_reason': 'CPU utilization < 1% for 1 hour',
+                        'potential_savings': 15.00, # Example cost
+                        'total_carbon': carbon_impact,
                     }
-                  )
+                )
     
-              ScanSummary.objects.create(
-                  user_id=user_id,
-                  total_cost=current_cost,
-                  total_carbon=carbon_impact # or 'impact' if defined elsewhere
-              )
-
-
+                ScanSummary.objects.create(
+                    user_id=user_id,
+                    total_cost=current_cost,
+                    total_carbon=carbon_impact # or 'impact' if defined elsewhere
+                )
 
