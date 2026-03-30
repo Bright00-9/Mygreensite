@@ -72,19 +72,17 @@ def hunt_for_zombies(user_id):
                         'waste_reason': 'CPU utilization < 1% for 1 hour',
                         'potential_savings': 15.00
                         },# Example cost
-                  carbon_impact = calculate_carbon('t3.medium', 24, conn.region)
-                )
+                  carbon_impact = calculate_carbon('t3.medium', 24, conn.region),
                   ZombieResource.objects.update_or_create(
                   resource_id=instance_id,
                     defaults={
                     'total_carbon': carbon_impact,
-                    }
-                )
+                    }),
                    ScanSummary.objects.create(
                        user_id=user_id,
                        total_cost  =current_cost,
                         total_carbon=impact
                      )
-                
+                )
 
 
