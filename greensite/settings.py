@@ -69,10 +69,7 @@ WSGI_APPLICATION = 'greensite.wsgi.application'
 # Check if DATABASE_URL is set (it will be on Render, but maybe not on your phone)
 if os.environ.get('DATABASE_URL'):
     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('DATABASE_URL'),
-            conn_max_age=600,
-            ssl_require=True
+        'default': dj_database_url.config(conn_max_age=600, ssl_require=True
         )
     }
 else:
