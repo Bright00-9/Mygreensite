@@ -13,4 +13,3 @@ whitenoise
 celery
 redis
 reportlab
-jason

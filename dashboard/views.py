@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from .models import Resource, Post, Schedule, CloudConnection, ScanSummary, ZombieResource
 from django.contrib.auth.decorators import login_required
 import boto3
-import jason
+import json
 from .cloud_utils import render_to_pdf_report, scan_aws_full_report,fetch_cloud_data, get_boto_client,terminate_resource,get_finops_data,get_simulated_costs
 from moto import mock_aws
 from django.db import connection
