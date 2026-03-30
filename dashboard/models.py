@@ -35,14 +35,6 @@ class CloudConnection(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.provider} ({self.region})"
 
-# Summary of a scan (for the graphs)
-class ScanSummary(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    total_cost = models.FloatField()
-    total_carbon = models.FloatField()
-    zombie_count = models.IntegerField()
-
 # Individual "Zombies" found in a scan
 class ZombieResource(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
