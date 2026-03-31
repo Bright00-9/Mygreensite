@@ -41,6 +41,21 @@ def dashboard_home(request):
         'latest': latest
     }
     
+    has_connection = CloudConnection.objects.filter(user=request.user).exists()
+    
+    # Only try to fetch scans if a connection exists
+    latest_scan = None
+    if has_connection:
+        latest_scan = ScanSummary.objects.filter(user=request.user).order_by('-timestamp').first()
+
+    context = {
+        'has_connection': has_connection,
+        'scan': latest_scan,
+        # ... other context ...
+    }
+    return render(request, 'dashboard/main.html', context)
+
+    
     return render(request, 'dashboard/index.html', context)
 
 # dashboard/views.py
