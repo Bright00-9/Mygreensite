@@ -69,13 +69,12 @@ WSGI_APPLICATION = 'greensite.wsgi.application'
 # Check if DATABASE_URL is set (it will be on Render, but maybe not on your phone)
 if os.environ.get('DATABASE_URL'):
     DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://postgres.vxnhoxrnptmxhatmojjk:scSJuvN,!RR2+n3@aws-1-eu-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true',
-        conn_max_age=600, # This helps keep the pool alive
-    )
-}
-      
+      'default': dj_database_url.config(
+          default='postgresql://postgres.vxnhoxrnptmxhatmojjk:scSJuvN,!RR2+n3@aws-1-eu-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true',
+        conn_max_age=600
+      )
     }
+    
 else:
     DATABASES = {
         'default': {
