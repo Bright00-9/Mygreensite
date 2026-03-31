@@ -10,6 +10,9 @@ from django.db import connection
 from django.utils import timezone
 from datetime import timedelta
 from .tasks import scan_user_aws
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+
   
 
 def dashboard_home(request):
@@ -198,18 +201,34 @@ def api_rightsize(request, res_id):
     return JsonResponse({"msg": "Success"})
 
 @login_required
-@mock_aws
-def download_report(request):
-    # 1. Get the live mock data
-    resources = scan_aws_full_report()
-    
-    # 2. Generate the PDF buffer
-    pdf_buffer = render_to_pdf_report(resources)
-    
-    # 3. Return the response
-    response = HttpResponse(pdf_buffer, content_type='application/pdf')
+def generate_pdf_report(request):
+    # Fetch data
+    try:
+        latest_scan = ScanSummary.objects.filter(user=request.user).latest('timestamp')
+        zombies = ZombieResource.objects.filter(user=request.user)
+    except ScanSummary.DoesNotExist:
+        return HttpResponse("No scan data found. Run a manual scan first.")
+
+    # Context for the template
+    context = {
+        'scan': latest_scan,
+        'zombies': zombies,
+    }
+
+    # Create the PDF
+    response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="Komado_Report.pdf"'
+    
+    template = get_template('dashboard/pdf_report.html')
+    html = template.render(context)
+
+    # Convert HTML to PDF
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
+
 
 
 def connect_aws(request):
@@ -237,6 +256,6 @@ def run_manual_scan(request):
         from django.contrib import messages
         messages.success(request, "Initiating full account scan...")
         
-        return redirect('dashboard_home')
-    return redirect('dashboard_home')
+        return redirect('dashboard:forum')
+    return redirect('dashboard:forum')
 

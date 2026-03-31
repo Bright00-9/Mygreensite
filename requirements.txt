@@ -13,3 +13,4 @@ whitenoise
 celery
 redis
 reportlab
+xhtml2pdf==0.2.11

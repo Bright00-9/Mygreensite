@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Helvetica', sans-serif; color: #333; }
+        .header { text-align: center; border-bottom: 2px solid #2ecc71; padding-bottom: 10px; }
+        .komado-logo { font-size: 28px; font-weight: bold; color: #27ae60; }
+        .section { margin-top: 30px; }
+        .section-title { font-size: 18px; border-left: 5px solid #27ae60; padding-left: 10px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .summary-box { background: #f9f9f9; padding: 15px; border-radius: 8px; }
+        .highlight { color: #e74c3c; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="komado-logo">KOMADO</div>
+        <p>Cloud Sustainability & Optimization Report</p>
+        <p>Date: {{ scan.timestamp|date:"M d, Y" }}</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">GreenOps Results</div>
+        <div class="summary-box">
+            <p><strong>Total Carbon Footprint:</strong> {{ scan.total_carbon }} kg CO2e</p>
+            <p><strong>Sustainability Score:</strong> 
+                {% if scan.total_carbon < 5 %} A+ {% else %} B- {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">FinOps Results</div>
+        <div class="summary-box">
+            <p><strong>Estimated Monthly Waste:</strong> <span class="highlight">${{ scan.total_cost }}</span></p>
+            <p><strong>Active Zombie Resources:</strong> {{ zombies.count }}</p>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Resource ID</th>
+                    <th>Type</th>
+                    <th>Reason</th>
+                    <th>Waste ($)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for zombie in zombies %}
+                <tr>
+                    <td>{{ zombie.resource_id }}</td>
+                    <td>{{ zombie.resource_type }}</td>
+                    <td>{{ zombie.waste_reason }}</td>
+                    <td>${{ zombie.potential_savings }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
