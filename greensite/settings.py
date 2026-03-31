@@ -70,11 +70,12 @@ WSGI_APPLICATION = 'greensite.wsgi.application'
 if os.environ.get('DATABASE_URL'):
     DATABASES = {
       'default': dj_database_url.config(
-          default='postgresql://postgres.vxnhoxrnptmxhatmojjk:scSJuvN,!RR2+n3@aws-1-eu-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true',
+        default=os.environ.get('DATABASE_URL'),
         conn_max_age=600
       )
     }
-    
+  
+
 else:
     DATABASES = {
         'default': {
