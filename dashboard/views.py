@@ -34,11 +34,7 @@ def dashboard_home(request):
     eco_score = max(0, 100 - (latest.total_carbon * 10)) if latest else 0
 
     context = {
-        'labels': labels,
-        'costs': costs,
-        'carbon': carbon,
-        'eco_score': eco_score,
-        'latest': latest
+
     }
     
     has_connection = CloudConnection.objects.filter(user=request.user).exists()
@@ -51,6 +47,12 @@ def dashboard_home(request):
     context = {
         'has_connection': has_connection,
         'scan': latest_scan,
+        'labels': labels,
+        'costs': costs,
+        'carbon': carbon,
+        'eco_score': eco_score,
+        'latest': latest
+    }
     
     return render(request, 'dashboard/index.html', context)
 
