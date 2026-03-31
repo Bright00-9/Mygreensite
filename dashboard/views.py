@@ -51,10 +51,6 @@ def dashboard_home(request):
     context = {
         'has_connection': has_connection,
         'scan': latest_scan,
-        # ... other context ...
-    }
-    return render(request, 'dashboard/main.html', context)
-
     
     return render(request, 'dashboard/index.html', context)
 
