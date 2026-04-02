@@ -35,6 +35,7 @@ class CloudConnection(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.provider} ({self.region})"
 
+
 # Individual "Zombies" found in a scan
 class ZombieResource(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
