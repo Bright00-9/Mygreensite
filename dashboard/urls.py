@@ -1,9 +1,10 @@
 from django.urls import path
 from . import views
-
-app_name='dashboard'
 from django.core.management import call_command
 import logging
+
+app_name='dashboard'
+
 
 # This runs the MOMENT the app starts on Render
 try:

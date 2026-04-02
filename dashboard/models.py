@@ -45,6 +45,7 @@ class ZombieResource(models.Model):
     detected_at = models.DateTimeField(auto_now_add=True)
     is_terminated = models.BooleanField(default=False)
     
+    
 
 class ScanSummary(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
@@ -54,4 +55,8 @@ class ScanSummary(models.Model):
     
     class Meta:
         ordering = ['-timestamp']
+        
 
+class trial(models.Model):
+    start_time = models.CharField(max_length=5, default="06:00")
+    end_time = models.CharField(max_length=5, default="20:00")
