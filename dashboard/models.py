@@ -47,16 +47,4 @@ class ZombieResource(models.Model):
     
     
 
-class ScanSummary(models.Model):
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    total_cost = models.DecimalField(max_digits=10, decimal_places=2)
-    total_carbon = models.FloatField(default=0.0) # In kgCO2e
-    
-    class Meta:
-        ordering = ['-timestamp']
-        
-
-class trial(models.Model):
-    start_time = models.CharField(max_length=5, default="06:00")
-    end_time = models.CharField(max_length=5, default="20:00")
+ 
