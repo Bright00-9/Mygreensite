@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
-from .models import Resource, Post, Schedule, CloudConnection, ScanSummary, ZombieResource
+from .models import Resource, Post, Schedule, CloudConnection, ScanSummaries, ZombieResource
 from django.contrib.auth.decorators import login_required
 import boto3
 import json
@@ -18,7 +18,7 @@ from xhtml2pdf import pisa
 def dashboard_home(request):
     # Get the last 7 days of data
     last_week = timezone.now() - timedelta(days=7)
-    history = ScanSummary.objects.filter(
+    history = ScanSummaries.objects.filter(
         user=request.user, 
         timestamp__gte=last_week
     ).order_by('timestamp')
@@ -42,7 +42,7 @@ def dashboard_home(request):
     # Only try to fetch scans if a connection exists
     latest_scan = None
     if has_connection:
-        latest_scan = ScanSummary.objects.filter(user=request.user).order_by('-timestamp').first()
+        latest_scan = ScanSummaries.objects.filter(user=request.user).order_by('-timestamp').first()
 
     context = {
         'has_connection': has_connection,
@@ -95,7 +95,7 @@ def index(request):
 
 def finops_dashboard(request):
     last_7_days = timezone.now() - timedelta(days=7)
-    data_points = ScanSummary.objects.filter(
+    data_points = ScanSummaries.objects.filter(
         user=request.user, 
         timestamp__gte=last_7_days
     ).order_by('timestamp')
@@ -117,7 +117,7 @@ def finops_dashboard(request):
     seven_days_ago = timezone.now() - timedelta(days=7)
     
     # Get data for the chart
-    chart_data = ScanSummary.objects.filter(
+    chart_data = ScanSummaries.objects.filter(
         user=request.user, 
         timestamp__gte=seven_days_ago
     ).order_by('timestamp')
@@ -217,9 +217,9 @@ def api_rightsize(request, res_id):
 def generate_pdf_report(request):
     # Fetch data
     try:
-        latest_scan = ScanSummary.objects.filter(user=request.user).latest('timestamp')
+        latest_scan = ScanSummaries.objects.filter(user=request.user).latest('timestamp')
         zombies = ZombieResource.objects.filter(user=request.user)
-    except ScanSummary.DoesNotExist:
+    except ScanSummaries.DoesNotExist:
         return HttpResponse("No scan data found. Run a manual scan first.")
 
     # Context for the template
