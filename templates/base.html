@@ -25,15 +25,21 @@
           <div class="p-6 bg-white/5 rounded-3xl border border-white/10 shadow-xl">
             {% if has_connection %}
               <form action="{% url 'dashboard:run_manual_scan' %}" method="POST">
-            {% csrf_token %}
-            <button type="submit" class="w-full bg-green-500 hover:bg-green-400 text-black font-black py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-green-500/20 active:scale-95">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                Run Full Account Scan
-            </button>
-        </form>
+                {% csrf_token %}
+                <button type="submit" class="w-full bg-green-500 hover:bg-green-400 text-black font-black py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-green-500/20 active:scale-95">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                      Run Full Account Scan
+                </button>
+              </form>
                 <p class="text-[10px] text-gray-500 mt-3 text-center italic">Scanning connected AWS Account: {{ connection.region }}</p>
+              <form action="{% url 'disconnect_cloud' account.id %}" method="POST" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">
+                  Disconnect Account
+                </button>
+              </form>
             {% endif %}
           </div>
         </nav>

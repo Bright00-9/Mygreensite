@@ -259,6 +259,22 @@ def connect_aws(request):
         return redirect('dashboard:forum')
     
     return render(request, 'dashboard/connect_aws.html')
+    
+# dashboard/views.py
+from django.shortcuts import get_object_or_404, redirect
+from django.utils import timezone
+from .models import CloudAccount
+
+def disconnect_cloud(request, account_id):
+    account = get_object_or_404(CloudAccount, id=account_id, user=request.user)
+    
+    # Logic to stop Celery tasks or revoke AWS session if needed
+    account.is_connected = False
+    account.disconnected_at = timezone.now()
+    account.save()
+    
+    return redirect('dashboard:forum')
+
 
 def run_manual_scan(request):
     if request.method == "POST":
