@@ -31,7 +31,7 @@ class CloudConnection(models.Model):
     secret_key = models.CharField(max_length=255) # In a real app, we would encrypt this!
     region = models.CharField(max_length=50, default='us-east-1')
     created_at = models.DateTimeField(auto_now_add=True)
-     is_connected = models.BooleanField(default=True)
+    is_connected = models.BooleanField(default=True)
     disconnected_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
