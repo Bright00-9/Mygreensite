@@ -260,13 +260,9 @@ def connect_aws(request):
     
     return render(request, 'dashboard/connect_aws.html')
     
-# dashboard/views.py
-from django.shortcuts import get_object_or_404, redirect
-from django.utils import timezone
-from .models import CloudAccount
 
 def disconnect_cloud(request, account_id):
-    account = get_object_or_404(CloudAccount, id=account_id, user=request.user)
+    account = get_object_or_404(CloudConnection, id=account_id, user=request.user)
     
     # Logic to stop Celery tasks or revoke AWS session if needed
     account.is_connected = False
