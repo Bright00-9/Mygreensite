@@ -14,28 +14,23 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django_celery_beat.models import PeriodicTask, IntervalSchedule
 from django.contrib import messages
-  
-def home(request):
-    if request.user.is_authenticated:
-        total_impact = ScanSchedule.objects.aggregate(Sum('total_carbon_saved'))['total_carbon_saved__sum'] or 0
-    
-    # Estimate money saved ($0.12 per kWh saved is a common GreenOps metric)
-        money_saved = total_impact * 0.12 
-        context = {
-            'total_impact': round(total_impact, 2),
-            'money_saved': round(money_saved, 2),
-        }
-        has_accounts = CloudAccount.objects.filter(user=request.user).exists()
-        return render(request, 'home.html', {'has_accounts': has_accounts})
-    return render(request, 'dashboard:home.html')
-    
 from django.db.models import Sum
 
-def home(request):
-    # Sum up all carbon saved by every user
-
-    return render(request, 'home.html', context)
-
+  
+#def home(request):
+    #if request.user.is_authenticated:
+        #total_impact = ScanSchedule.objects.aggregate(Sum('total_carbon_saved'))['total_carbon_saved__sum'] or 0
+    
+    # Estimate money saved ($0.12 per kWh saved is a common GreenOps metric)
+        #money_saved = total_impact * 0.12 
+        #context = {
+            #'total_impact': round(total_impact, 2),
+            #'money_saved': round(money_saved, 2),
+        #}
+        #has_accounts = CloudAccount.objects.filter(user=request.user).exists()
+        #return render(request, 'home.html', {'has_accounts': has_accounts})
+    #return render(request, 'dashboard:home.html')
+    
 
 def dashboard_home(request):
     # Get the last 7 days of data
@@ -75,6 +70,18 @@ def dashboard_home(request):
         'eco_score': eco_score,
         'latest': latest
     }
+    
+    if request.user.is_authenticated:
+        total_impact = ScanSchedule.objects.aggregate(Sum('total_carbon_saved'))['total_carbon_saved__sum'] or 0
+    
+    # Estimate money saved ($0.12 per kWh saved is a common GreenOps metric)
+        money_saved = total_impact * 0.12 
+        context = {
+            'total_impact': round(total_impact, 2),
+            'money_saved': round(money_saved, 2),
+        }
+        has_accounts = CloudAccount.objects.filter(user=request.user).exists()
+        return redirect(request, 'dashboard:home.html', {'has_accounts': has_accounts})
     
     return render(request, 'dashboard/index.html', context)
 
