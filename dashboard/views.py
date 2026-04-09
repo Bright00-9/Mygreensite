@@ -12,8 +12,30 @@ from datetime import timedelta
 from .tasks import scan_user_aws
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
+from django.contrib import messages
   
+def home(request):
+    if request.user.is_authenticated:
+        total_impact = Schedule.objects.aggregate(Sum('total_carbon_saved'))['total_carbon_saved__sum'] or 0
+    
+    # Estimate money saved ($0.12 per kWh saved is a common GreenOps metric)
+        money_saved = total_impact * 0.12 
+        context = {
+            'total_impact': round(total_impact, 2),
+            'money_saved': round(money_saved, 2),
+        }
+        has_accounts = CloudAccount.objects.filter(user=request.user).exists()
+        return render(request, 'home.html', {'has_accounts': has_accounts})
+    return render(request, 'dashboard:home.html')
+    
+from django.db.models import Sum
+
+def home(request):
+    # Sum up all carbon saved by every user
+
+    return render(request, 'home.html', context)
+
 
 def dashboard_home(request):
     # Get the last 7 days of data
@@ -149,32 +171,55 @@ def terminate_resource(request, zombie_id):
 
 
 @login_required
-def shield_view(request):
-    sched = Schedule.objects.first()
-    return render(request, 'dashboard/shield.html', {'sched': sched})
+def shield_view(request, pk):
+    # 1. Fetch the specific Cloud Account
+    user = get_object_or_404(CloudConnection, pk=pk, user=request.user)
     
+    config, created = ShieldConfiguration.objects.get_or_create(account=account)
 
-@login_required
-@mock_aws
-def shield_scheduler(request):
-    status = ""
+    task_name = f"Shield_User_{user.id}"
+    existing_task = PeriodicTask.objects.filter(name=task_name).first()
+
     if request.method == "POST":
-        instance_id = request.POST.get("instance_id")
-        start_time = request.POST.get("start_time") # e.g., "0600"
-        end_time = request.POST.get("end_time")   
-        ec2 = get_boto_client('ec2')
-        ec2.create_tags(
-            Resources=[instance_id],
-            Tags=[
-                {'Key': 'AutoSchedule', 'Value': 'true'},
-                {'Key': 'ScheduleRange', 'Value': f"{start_time}-{end_time}"}
-            ]
-        )
-        status = f"Schedule set for {instance_id}: {start_time} to {end_time}"
+        selected_resource = request.POST.get('resource')
+        try:
+            minutes = int(request.POST.get('frequency'))
+        except (ValueError, TypeError):
+            minutes = 60 # Fallback default
 
-    resources = fetch_cloud_data()
-    return render(request, 'dashboard/shield.html', {'resources': resources, 'status': status})
-    
+        # Create or Get the Interval (The "When")
+        Schedule, _ = IntervalSchedule.objects.get_or_create(
+            every=minutes,
+            period=IntervalSchedule.MINUTES,
+        )
+
+        task, _ = PeriodicTask.objects.update_or_create(
+            name=task_name,
+            defaults={
+                'interval': schedule,
+                'task': 'dashboard.tasks.shield_scheduler_trigger', 
+                'args': json.dumps([user.id, selected_resource]),
+                'enabled': True,
+            }
+        )
+        
+        config.target_service = service
+        config.periodic_task = task
+        config.is_active = True
+        config.save()
+
+        messages.success(request, f"Shield active for {selected_resource}!")
+        return redirect('shield_scheduler', pk=pk)
+
+    # 3. Present the template with context
+    context = {
+        'user': user,
+        'task': existing_task,
+        'current_service': json.loads(existing_task.args)[1] if existing_task and existing_task.args else None
+    }
+    return render(request, 'dashboard/shield.html', context)
+
+
 
 @login_required
 def forum_view(request):
@@ -261,13 +306,13 @@ def connect_aws(request):
     return render(request, 'dashboard/connect_aws.html')
     
 
-def disconnect_cloud(request, account_id):
-    account = get_object_or_404(CloudConnection, id=account_id, user=request.user)
+def disconnect_cloud(request, user_id):
+    user = get_object_or_404(CloudConnection, id=user_id, user=request.user)
     
     # Logic to stop Celery tasks or revoke AWS session if needed
-    account.is_connected = False
-    account.disconnected_at = timezone.now()
-    account.save()
+    user.is_connected = False
+    user.disconnected_at = timezone.now()
+    user.save()
     
     return redirect('dashboard:forum')
 

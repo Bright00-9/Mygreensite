@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dashboard',
     'users',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [

@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
+
 
 class Resource(models.Model):
     name = models.CharField(max_length=100)
@@ -57,5 +59,44 @@ class ScanSummaries(models.Model):
     
     class Meta:
         ordering = ['-timestamp']
+        
+
+
+class Schedule(models.Model):
+    # Link to the user's connected cloud account
+    user = models.OneToOneField(
+        'CloudConnection', 
+        on_delete=models.CASCADE, 
+        related_name='shield_config'
+    )
+    
+    # The AWS service the user wants to protect
+    SERVICE_CHOICES = [
+        ('EC2', 'EC2 Zombie Hunter'),
+        ('S3', 'S3 Storage Guard'),
+        ('RDS', 'RDS Idle Shield'),
+        ('LAMBDA', 'Lambda Monitor'),
+    ]
+    target_service = models.CharField(
+        max_length=20, 
+        choices=SERVICE_CHOICES, 
+        default='EC2'
+    )
+    
+    # Status and stats
+    is_active = models.BooleanField(default=False)
+    last_scan_date = models.DateTimeField(null=True, blank=True)
+    total_carbon_saved = models.FloatField(default=0.0) # For your GreenOps metrics
+    
+    # Link to the actual Celery Periodic Task
+    periodic_task = models.OneToOneField(
+        PeriodicTask, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
+
+    def __str__(self):
+        return f"Shield for {self.account.display_name} ({self.target_service})"
 
  

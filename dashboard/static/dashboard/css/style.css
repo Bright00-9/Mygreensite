@@ -249,3 +249,56 @@ form input, form textarea {
     text-decoration: none;
     font-weight: 600;
 }
+
+:root {
+    --komado-dark: #121212;
+    --komado-green: #2ecc71;
+    --komado-accent: #27ae60;
+    --komado-text: #e0e0e0;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+}
+
+body {
+    background-color: var(--komado-dark);
+    color: var(--komado-text);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.shield-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glow-button {
+    background: linear-gradient(45deg, var(--komado-green), var(--komado-accent));
+    border: none;
+    color: white;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+}
+
+.glow-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(46, 204, 113, 0.6);
+}
+
+.form-control, .form-select {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white !important;
+}
+
+.status-badge {
+    background: rgba(46, 204, 113, 0.1);
+    color: var(--komado-green);
+    border: 1px solid var(--komado-green);
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+}

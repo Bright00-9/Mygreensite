@@ -1,57 +1,73 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-    <div class="flex items-center mb-6">
-        <i class="fas fa-shield-alt text-3xl text-green-500 mr-4"></i>
-        <div>
-            <h2 class="text-lg font-bold">Smart Shield</h2>
-            <p class="text-xs text-slate-400">Non-Prod Uptime Scheduler</p>
-        </div>
-    </div>
-    <div class="bg-slate-900 p-4 rounded-lg">
-        <div class="flex justify-between text-xs mb-4 text-slate-400">
-            <span>Status: <span class="text-green-500 font-bold uppercase">Active</span></span>
-            <span>Range: 06:00 - 20:00</span>
-        </div>
-        <div class="h-2 w-full bg-slate-700 rounded-full overflow-hidden flex">
-            <div class="w-1/4 bg-slate-800 h-full"></div>
-            <div class="w-2/4 bg-green-500 h-full"></div>
-            <div class="w-1/4 bg-slate-800 h-full"></div>
-        </div>
-    </div>
-    <p class="text-[10px] text-slate-500 mt-4 text-center">Saving ~58% on instance costs monthly.</p>
-</div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12">
+            
+            <div class="text-center mb-5">
+                <div class="shield-icon-container mb-3">
+                    <i class="fas fa-shield-alt fa-4x" style="color: var(--komado-green);"></i>
+                </div>
+                <h1 class="display-6 fw-bold">Shield Scheduler</h1>
+                <span class="status-badge">System Status: Active</span>
+            </div>
 
-  <h1 class="text-3xl font-bold text-blue-400 mb-6">Smart Shield Scheduler</h1>
+            <div class="shield-card">
+                <h5 class="mb-4"><i class="fas fa-cog me-2"></i>Defense Configuration</h5>
+                
+                <form method="POST" action="{% url 'dashboard:shield' user.pk %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small">PROTECTION TARGET</label>
+                        <select name="service" class="form-select form-select-lg">
+                            <option value="EC2">EC2 Zombie Hunter</option>
+                            <option value="S3">S3 Storage Guard</option>
+                            <option value="RDS">RDS Idle Shield</option>
+                            <option value="LAMBDA">Lambda Execution Monitor</option>
+                        </select>
+                    </div>
 
-  {% if status %}
-    <div class="bg-blue-900/50 p-4 rounded mb-6 border border-blue-500 text-blue-200">
-      {{ status }}
-    </div>
-  {% endif %}
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small">SCAN FREQUENCY (MINUTES)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-white"><i class="fas fa-clock"></i></span>
+                            <input type="number" name="frequency" class="form-control form-control-lg" placeholder="60" required>
+                        </div>
+                    </div>
 
-  <div class="bg-gray-900 p-6 rounded-xl border border-gray-800">
-    <form method="POST">
-        {% csrf_token %}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-                <label class="block text-gray-400 mb-2">Select Instance</label>
-                <select name="instance_id" class="w-full bg-gray-800 p-2 rounded border border-gray-700">
-                    {% for r in resources %}
-                    <option value="{{ r.id }}">{{ r.id }} ({{ r.type }})</option>
-                    {% endfor %}
+                    <button type="submit" class="btn glow-button w-100 py-3 mt-3">
+                        <i class="fas fa-bolt me-2"></i>UPDATE SHIELD
+                    </button>
+                </form>
+            </div>
+
+            <div class="mt-4 text-center">
+                <p class="small text-secondary">
+                    <i class="fas fa-info-circle me-1"></i> 
+                    The Shield Scheduler automatically optimizes resources to lower your carbon footprint.
+                </p>
+            </div>
+            <div class="mb-4">
+                <label class="form-label text-secondary small">PROTECTION TARGE
+                </label>
+                <select name="service" class="form-select form-select-lg">
+                  <option value="EC2" {% if current_service == 'EC2' %}selected{% endif %}>EC2 Zombie Hunter</option>
+                  <option value="S3" {% if current_service == 'S3' %}selected{% endif %}>S3 Storage Guard</option>
+                  <option value="RDS" {% if current_service == 'RDS' %}selected{% endif %}>RDS Idle Shield</option>
                 </select>
             </div>
-            <div>
-                <label class="block text-gray-400 mb-2">Start Time (24h)</label>
-                <input type="text" name="start_time" placeholder="0600" class="w-full bg-gray-800 p-2 rounded border border-gray-700">
-            </div>
-            <div>
-                <label class="block text-gray-400 mb-2">End Time (24h)</label>
-                <input type="text" name="end_time" placeholder="2000" class="w-full bg-gray-800 p-2 rounded border border-gray-700">
+
+            <div class="mb-4">
+                <label class="form-label text-secondary small">SCAN FREQUENCY (MINUTES)</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-white"><i class="fas fa-clock"></i></span>
+                    <input type="number" name="frequency" class="form-control form-control-lg" 
+                  value="{{ task.interval.every|default:60 }}" required>
+                </div>
             </div>
         </div>
-        <button class="mt-6 bg-blue-600 hover:bg-blue-500 px-8 py-2 rounded font-bold">Apply Shield Schedule</button>
-    </form>
-  </div>
+    </div>
+</div>
 {% endblock %}

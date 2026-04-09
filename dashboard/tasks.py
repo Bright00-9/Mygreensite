@@ -84,3 +84,24 @@ def hunt_for_zombies(user_id):
                     total_carbon=carbon_impact # or 'impact' if defined elsewhere
                 )
 
+@shared_task(name="komado.shield_scheduler_trigger")
+def shield_scheduler_trigger(user_id, resource_type):
+    """
+    The main engine for the Shield Scheduler. 
+    It receives the user's 'Selected Resource' and runs the hunt.
+    """
+    print(f"SHIELD ACTIVE: Scanning {resource_type} for User {user_id}")
+    
+    # This calls your core logic (EC2, RDS, etc.)
+    results = hunt_for_zombies(user_id, resource_type)
+    
+    # Update the Dashboard ScanSummary with the results
+    return f"Shield Scan for {resource_type} complete."
+
+@shared_task(name="dashboard.tasks.shield_scheduler_trigger")
+def shield_scheduler_trigger(user_id, resource_type):
+    # This is where your Boto3/AWS logic runs
+    print(f"SHIELD SCAN STARTING: User {user_id} | Resource {resource_type}")
+    # ... logic to find zombies ...
+    return f"Completed scan for {resource_type}"
+
