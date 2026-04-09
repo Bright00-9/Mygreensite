@@ -62,7 +62,7 @@ class ScanSummaries(models.Model):
         
 
 
-class Schedule(models.Model):
+class ScanSchedule(models.Model):
     # Link to the user's connected cloud account
     user = models.OneToOneField(
         'CloudConnection', 

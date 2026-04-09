@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
-from .models import Resource, Post, Schedule, CloudConnection, ScanSummaries, ZombieResource
+from .models import Resource, Post, ScanSchedule, CloudConnection, ScanSummaries, ZombieResource
 from django.contrib.auth.decorators import login_required
 import boto3
 import json
@@ -17,7 +17,7 @@ from django.contrib import messages
   
 def home(request):
     if request.user.is_authenticated:
-        total_impact = Schedule.objects.aggregate(Sum('total_carbon_saved'))['total_carbon_saved__sum'] or 0
+        total_impact = ScanSchedule.objects.aggregate(Sum('total_carbon_saved'))['total_carbon_saved__sum'] or 0
     
     # Estimate money saved ($0.12 per kWh saved is a common GreenOps metric)
         money_saved = total_impact * 0.12 
@@ -175,7 +175,7 @@ def shield_view(request, pk):
     # 1. Fetch the specific Cloud Account
     user = get_object_or_404(CloudConnection, pk=pk, user=request.user)
     
-    config, created = ShieldConfiguration.objects.get_or_create(account=account)
+    config, created = ScanSchedule.objects.get_or_create(user=user)
 
     task_name = f"Shield_User_{user.id}"
     existing_task = PeriodicTask.objects.filter(name=task_name).first()
@@ -196,7 +196,7 @@ def shield_view(request, pk):
         task, _ = PeriodicTask.objects.update_or_create(
             name=task_name,
             defaults={
-                'interval': schedule,
+                'interval': scanschedule,
                 'task': 'dashboard.tasks.shield_scheduler_trigger', 
                 'args': json.dumps([user.id, selected_resource]),
                 'enabled': True,
