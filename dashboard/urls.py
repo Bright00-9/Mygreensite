@@ -27,5 +27,6 @@ urlpatterns = [
     path('connect-aws/', views.connect_aws, name='connect_aws'),
     path('run_manual_scan/', views.run_manual_scan, name='run_manual_scan'),
     path('terminate/<int:zombie_id>/', views.terminate_resource, name='terminate_resource'),
+    path('account/<int:pk>/disconnect/', views.disconnect_cloud, name='disconnect_cloud'),
 ]
 
