@@ -2,6 +2,7 @@ django
 boto3
 botocore
 moto[ec2,s3,cloudwatch,iam]
+django-celery-beat
 pandas
 matplotlib
 openpyxl
@@ -14,4 +15,4 @@ celery
 redis
 reportlab
 xhtml2pdf==0.2.11
-django-celery-beat
+
