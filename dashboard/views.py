@@ -153,7 +153,7 @@ def terminate_resource(request, zombie_id):
 @login_required
 def shield_view(request, pk):
     # 1. Fetch the specific Cloud Account belonging to the logged in user
-    account = get_object_or_404(CloudConnection, pk=pk, user=request.user)
+    account = CloudConnection.objects.filter(user=request.user)
     
     # 2. Get or create the ScanSchedule config linked to this cloud account
     config, created = ScanSchedule.objects.get_or_create(user=account)
