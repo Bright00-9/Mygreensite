@@ -81,7 +81,7 @@ def dashboard_home(request):
             'money_saved': round(money_saved, 2),
         }
         has_accounts = CloudConnection.objects.filter(user=request.user).exists()
-        return redirect(request, 'dashboard:home.html', {'has_accounts': has_accounts})
+        return redirect('dashboard:home.html', {'has_accounts': has_accounts})
     
     return render(request, 'dashboard/index.html', context)
 
@@ -180,7 +180,7 @@ def terminate_resource(request, zombie_id):
 @login_required
 def shield_view(request, pk):
     # 1. Fetch the specific Cloud Account
-    user = get_object_or_404(CloudConnection, pk=pk, user=request.user)
+    account = get_object_or_404(CloudConnection, pk=pk, user=request.user)
     
     config, created = ScanSchedule.objects.get_or_create(user=user)
 
