@@ -18,7 +18,7 @@ except Exception as e:
 
 urlpatterns = [
     path('', views.dashboard_home, name='mainboard'),
-    path('user/<int:pk>/shield/', views.shield_view, name='shield'),
+    path('account/<int:pk>/shield/', views.shield_view, name='shield'),
     path('forum/', views.forum_view, name='forum'),
     path('delete/<int:post_id>/', views.delete_post, name='delete_post'),
     path('rightsize/<int:res_id>/', views.api_rightsize, name='rightsize'),

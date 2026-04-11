@@ -137,7 +137,7 @@ def finops_dashboard(request):
 
 def zombie_graveyard(request):
     zombies = ZombieResource.objects.filter(user=request.user, is_terminated=False)
-    return render(request, 'dashboard/.html', {'zombies': zombies})
+    return render(request, 'dashboard/zombies.html', {'zombies': zombies})
 
 
 def terminate_resource(request, zombie_id):
@@ -147,53 +147,62 @@ def terminate_resource(request, zombie_id):
     zombie.save()
     
     messages.success(request, f"Resource {zombie.resource_id} has been exorcised!")
-    return redirect('zombie_graveyard')
+    return redirect('dashboard:zombies')
 
 
 @login_required
 def shield_view(request, pk):
-    # 1. Fetch the specific Cloud Account
+    # 1. Fetch the specific Cloud Account belonging to the logged in user
     account = get_object_or_404(CloudConnection, pk=pk, user=request.user)
     
-    config, created = ScanSchedule.objects.get_or_create(user=user)
-
-    task_name = f"Shield_User_{user.id}"
+    # 2. Get or create the ScanSchedule config linked to this cloud account
+    config, created = ScanSchedule.objects.get_or_create(user=account)
+    
+    # 3. Build a unique task name for this user
+    task_name = f"Shield_User_{request.user.id}"
+    
+    # 4. Check if a celery task already exists with this name
     existing_task = PeriodicTask.objects.filter(name=task_name).first()
 
     if request.method == "POST":
+        # Get the selected AWS service and frequency from the form
         selected_resource = request.POST.get('resource')
+        
         try:
             minutes = int(request.POST.get('frequency'))
         except (ValueError, TypeError):
-            minutes = 60 # Fallback default
+            minutes = 60  # Fallback default frequency
 
-        # Create or Get the Interval (The "When")
-        Schedule, _ = IntervalSchedule.objects.get_or_create(
+        # Create or get the interval schedule (the "when")
+        schedule, _ = IntervalSchedule.objects.get_or_create(
             every=minutes,
             period=IntervalSchedule.MINUTES,
         )
 
+        # Create or update the periodic task in celery beat
         task, _ = PeriodicTask.objects.update_or_create(
             name=task_name,
             defaults={
-                'interval': scanschedule,
-                'task': 'dashboard.tasks.shield_scheduler_trigger', 
-                'args': json.dumps([user.id, selected_resource]),
+                'interval': schedule,  # ✅ Fixed: was 'scanschedule'
+                'task': 'dashboard.tasks.shield_scheduler_trigger',
+                'args': json.dumps([request.user.id, selected_resource]),  # ✅ Fixed: was 'user.id'
                 'enabled': True,
             }
         )
-        
-        config.target_service = service
-        config.periodic_task = task
+
+        # Update the config with selected service
+        config.target_service = selected_resource  # ✅ Fixed: was 'service'
+        config.periodic_task_name = task_name  # ✅ Fixed: store name string instead of FK
         config.is_active = True
         config.save()
 
         messages.success(request, f"Shield active for {selected_resource}!")
         return redirect('shield_scheduler', pk=pk)
 
-    # 3. Present the template with context
+    # 5. Present the template with context
     context = {
-        'user': user,
+        'account': account,  # ✅ Fixed: was 'user' which is confusing
+        'config': config,
         'task': existing_task,
         'current_service': json.loads(existing_task.args)[1] if existing_task and existing_task.args else None
     }
@@ -294,7 +303,7 @@ def disconnect_cloud(request, user_id):
     user.disconnected_at = timezone.now()
     user.save()
     
-    return redirect('dashboard:forum')
+    return redirect('dashboard:')
 
 
 def run_manual_scan(request):
@@ -306,6 +315,6 @@ def run_manual_scan(request):
         from django.contrib import messages
         messages.success(request, "Initiating full account scan...")
         
-        return redirect('dashboard:forum')
-    return redirect('dashboard:forum')
+        return redirect('dashboard:index')
+    return render('dashboard/index')
 
