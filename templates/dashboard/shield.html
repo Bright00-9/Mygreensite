@@ -16,7 +16,7 @@
             <div class="shield-card">
                 <h5 class="mb-4"><i class="fas fa-cog me-2"></i>Defense Configuration</h5>
                 
-                <form method="POST" action="{% url 'dashboard:shield' user.pk %}">
+                <form method="POST" action="{% url 'dashboard:shield' account.pk %}">
                     {% csrf_token %}
                     
                     <div class="mb-4">
