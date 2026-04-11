@@ -40,6 +40,56 @@
                   Disconnect Account
                 </button>
               </form>
+            {% else %}
+              <div class="hero-section">
+                <div class="container text-center text-md-start">
+                  <div class="row align-items-center">
+                    <div class="col-lg-6"   >
+                      <h1 class="hero-title">Orchestrate Your Cloud, Protect the Planet.</h1>
+                      <p class="lead text-secondary mb-5">
+                    Komado is a FinOps & GreenOps engine designed to hunt "Zombie Resources" 
+                    and slash carbon waste in your AWS ecosystem.</p>
+                    </div>
+            
+                    <div class="col-lg-6 d-none d-lg-block">
+                      <div class="shield-visual text-center">
+                    <i class="fas fa-microchip fa-10x" style="color: rgba(46, 204, 113, 0.1);"></i></div>
+                    </div>
+                  </div>
+
+                  <div class="row mt-5 pt-5">
+                    <div class="col-md-4 mb-4">
+                      <div class="feature-card p-4">
+                        <i class="fas fa-ghost fa-2x text-success mb-3"></i>
+                        <h4>Zombie Hunter</h4>
+                        <p class="text-secondary">Automatically identify and terminate idle EC2 instances and unattached EBS volumes.</p></div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                      <div class="feature-card p-4">
+                        <i class="fas fa-shield-halved fa-2x text-success mb-3"></i>
+                        <h4>Shield Scheduler</h4>
+                        <p class="text-secondary">Automated security and optimization scans that run on your own specific timeline.</p></div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                      <div class="feature-card p-4">
+                    <i class="fas fa-leaf fa-2x text-success mb-3"></i>
+                        <h4>Green Score</h4>
+                        <p class="text-secondary">A real-time dashboard tracking your reduction in carbon footprint and cloud spending.</p></div>
+                    </div>
+                    <div class="row mt-5">
+                      <div class="col-12">
+                        <div class="stats-container p-4 d-flex justify-content-around text-center">
+                          <div class="stat-item">
+                            <h2 class="<fw></fw>-bold text-success">{{ total_impact }}kg</h2>
+                            <p class="small text-uppercase text-secondary">CO₂ Emissions Prevente</p></div>
+                          <div class="stat-divider"></div>
+                            <div class="stat-item">
+                              <h2 class="fw-bold text-success">${{ money_saved }}</h2>
+                              <p class="small text-uppercase text-secondary">Total Cloud Waste Saved</p></div></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             {% endif %}
           </div>
         </nav>
