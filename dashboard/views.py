@@ -193,7 +193,7 @@ def shield_view(request, pk):
         config.save()
 
         messages.success(request, f"Shield active for {selected_resource}!")
-        return redirect('shield_scheduler', pk=pk)
+        return redirect('dashboard:shield', pk=pk)
 
     context = {
         'account': account,
@@ -290,15 +290,18 @@ def connect_aws(request):
     return render(request, 'dashboard/connect_aws.html')
     
 
-def disconnect_cloud(request, user_id):
-    user = get_object_or_404(CloudConnection, id=user_id, user=request.user)
+def disconnect_cloud(request, pk):  # ✅ Fixed: was 'user_id', must match URL parameter
+    account = get_object_or_404(CloudConnection, pk=pk, user=request.user)  # ✅ Fixed: use pk
     
-    # Logic to stop Celery tasks or revoke AWS session if needed
-    user.is_connected = False
-    user.disconnected_at = timezone.now()
-    user.save()
+    if request.method == 'POST':
+        # Logic to stop Celery tasks or revoke AWS session if needed
+        account.is_connected = False
+        account.disconnected_at = timezone.now()
+        account.save()
+        
+        messages.success(request, "Cloud account disconnected successfully!")
     
-    return redirect('dashboard:')
+    return redirect('dashboard:mainboard')  # ✅ Fixed: was 'dashboard:' which is incomplete
 
 
 def run_manual_scan(request):
