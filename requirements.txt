@@ -2,7 +2,7 @@ django
 boto3
 botocore
 moto[ec2,s3,cloudwatch,iam]
-django-celery-beat
+django-celery-beat==2.6.0
 pandas
 matplotlib
 openpyxl
