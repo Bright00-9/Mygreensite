@@ -80,7 +80,7 @@ def dashboard_home(request):
             'total_impact': round(total_impact, 2),
             'money_saved': round(money_saved, 2),
         }
-        has_accounts = CloudAccount.objects.filter(user=request.user).exists()
+        has_accounts = CloudConnection.objects.filter(user=request.user).exists()
         return redirect(request, 'dashboard:home.html', {'has_accounts': has_accounts})
     
     return render(request, 'dashboard/index.html', context)
