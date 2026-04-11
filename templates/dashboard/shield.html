@@ -10,30 +10,49 @@
                     <i class="fas fa-shield-alt fa-4x" style="color: var(--komado-green);"></i>
                 </div>
                 <h1 class="display-6 fw-bold">Shield Scheduler</h1>
-                <span class="status-badge">System Status: Active</span>
+                <span class="status-badge">
+                    System Status: 
+                    {% if config.is_active %}
+                        Active
+                    {% else %}
+                        Inactive
+                    {% endif %}
+                </span>
             </div>
 
             <div class="shield-card">
                 <h5 class="mb-4"><i class="fas fa-cog me-2"></i>Defense Configuration</h5>
                 
+                <!-- ✅ Single clean form - removed duplicate fields -->
                 <form method="POST" action="{% url 'dashboard:shield' pk=account.id %}">
                     {% csrf_token %}
                     
+                    <!-- Protection Target -->
                     <div class="mb-4">
                         <label class="form-label text-secondary small">PROTECTION TARGET</label>
-                        <select name="service" class="form-select form-select-lg">
-                            <option value="EC2">EC2 Zombie Hunter</option>
-                            <option value="S3">S3 Storage Guard</option>
-                            <option value="RDS">RDS Idle Shield</option>
-                            <option value="LAMBDA">Lambda Execution Monitor</option>
+                        <select name="resource" class="form-select form-select-lg">
+                            <!-- ✅ Fixed: name is 'resource' to match view's POST.get('resource') -->
+                            <!-- ✅ Fixed: shows currently selected service -->
+                            <option value="EC2" {% if current_service == 'EC2' %}selected{% endif %}>EC2 Zombie Hunter</option>
+                            <option value="S3" {% if current_service == 'S3' %}selected{% endif %}>S3 Storage Guard</option>
+                            <option value="RDS" {% if current_service == 'RDS' %}selected{% endif %}>RDS Idle Shield</option>
+                            <option value="LAMBDA" {% if current_service == 'LAMBDA' %}selected{% endif %}>Lambda Execution Monitor</option>
                         </select>
                     </div>
 
+                    <!-- Scan Frequency -->
                     <div class="mb-4">
                         <label class="form-label text-secondary small">SCAN FREQUENCY (MINUTES)</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-dark border-secondary text-white"><i class="fas fa-clock"></i></span>
-                            <input type="number" name="frequency" class="form-control form-control-lg" placeholder="60" required>
+                            <span class="input-group-text bg-dark border-secondary text-white">
+                                <i class="fas fa-clock"></i>
+                            </span>
+                            <!-- ✅ Fixed: prefills with existing task frequency if available -->
+                            <input type="number" name="frequency" 
+                                   class="form-control form-control-lg" 
+                                   placeholder="60"
+                                   value="{{ task.interval.every|default:60 }}"
+                                   required>
                         </div>
                     </div>
 
@@ -49,24 +68,7 @@
                     The Shield Scheduler automatically optimizes resources to lower your carbon footprint.
                 </p>
             </div>
-            <div class="mb-4">
-                <label class="form-label text-secondary small">PROTECTION TARGE
-                </label>
-                <select name="service" class="form-select form-select-lg">
-                  <option value="EC2" {% if current_service == 'EC2' %}selected{% endif %}>EC2 Zombie Hunter</option>
-                  <option value="S3" {% if current_service == 'S3' %}selected{% endif %}>S3 Storage Guard</option>
-                  <option value="RDS" {% if current_service == 'RDS' %}selected{% endif %}>RDS Idle Shield</option>
-                </select>
-            </div>
 
-            <div class="mb-4">
-                <label class="form-label text-secondary small">SCAN FREQUENCY (MINUTES)</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-dark border-secondary text-white"><i class="fas fa-clock"></i></span>
-                    <input type="number" name="frequency" class="form-control form-control-lg" 
-                  value="{{ task.interval.every|default:60 }}" required>
-                </div>
-            </div>
         </div>
     </div>
 </div>
