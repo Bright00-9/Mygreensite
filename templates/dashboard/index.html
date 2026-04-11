@@ -12,50 +12,44 @@
             </svg>
           </div>
         </div>
-        <h2 class="text-2xl font-bold text-white mb-2">Ready to Optimize Your Cloud?</h2>
+        <h2 class="text-2xl font-bold text-white mb-2">Ready to Optimize Your Cloud?</h2><br>
         <p class="text-gray-400 mb-6 max-w-md mx-auto">
             Connect your AWS account to unlock <strong>Komado's</strong> full power:
-        </p>
+        </p><br>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-left">
           <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-            <span class="text-green-400 font-bold block">🛡️ Zombie Hunter
-            </span>
-            <span class="text-xs text-gray-500">Find idle resources wasting your budget.
-            </span>
+            <span class="text-green-400 font-bold block">🛡️ Zombie Hunter</span>
+            <span class="text-xs text-gray-500">Find idle resources wasting your budget.</span>
           </div>
           <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-            <span class="text-green-400 font-bold block">🌍 Green Score
-            </span>
-            <span class="text-xs text-gray-500">Track and reduce your carbon footprint.
-            </span>
+            <span class="text-green-400 font-bold block">🌍 Green Score</span>
+            <span class="text-xs text-gray-500">Track and reduce your carbon footprint.</span>
           </div>
           <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-            <span class="text-green-400 font-bold block">📊 FinOps Insights
-            </span>
-            <span class="text-xs text-gray-500">Visual reports of your daily cloud spend.
-            </span>
+            <span class="text-green-400 font-bold block">📊 FinOps Insights</span>
+            <span class="text-xs text-gray-500">Visual reports of your daily cloud spend.</span>
           </div>
-        </div>
+        </div><br>
 
         <a href="{% url 'dashboard:connect_aws' %}" class="inline-block bg-green-500 hover:bg-green-400 text-black font-black py-4 px-10 rounded-2xl transition-all transform active:scale-95 shadow-lg shadow-green-500/20">
-                  Connect AWS Account Now
+            Connect AWS Account Now
         </a>
       </div>
+
     {% else %}
       <div class="mb-8 text-center">
         <h2 class="text-slate-400 text-sm uppercase tracking-widest mb-2">Cloud Eco-Score</h2>
         <div class="relative inline-flex items-center justify-center">
           <svg class="w-32 h-32">
-            <circle cx="64" cy="64" r="58" stroke="currentColor" stroke-width="8" fill="transparent" class="text-slate-800">
-            </circle>
+            <circle cx="64" cy="64" r="58" stroke="currentColor" stroke-width="8" fill="transparent" class="text-slate-800"></circle>
             <circle cx="64" cy="64" r="58" stroke="currentColor" stroke-width="8" fill="transparent" 
                class="text-green-500" stroke-dasharray="364" stroke-dashoffset="{{ 364|add:eco_score }}" 
                style="transition: stroke-dashoffset 1s ease-in-out;">
             </circle>
           </svg>
-          <span class="absolute text-3xl font-bold">{{ eco_score 
-          </span>
+          <!-- ✅ Fixed: missing closing }} -->
+          <span class="absolute text-3xl font-bold">{{ eco_score }}</span>
         </div>
         <p class="text-green-400 text-xs mt-2 font-mono">Optimized for GreenOps</p>
       </div>
@@ -64,6 +58,17 @@
         <h3 class="text-lg font-semibold mb-4 text-blue-400">7-Day Cost Analytics (FinOps)</h3>
         <canvas id="finopsChart" height="200"></canvas>
       </div>
+
+      <!-- ✅ Added shield link using account.id -->
+      {% if account %}
+      <div class="mt-6 text-center">
+        <a href="{% url 'dashboard:shield' pk=account.id %}" 
+           class="inline-block bg-green-500 hover:bg-green-400 text-black font-black py-4 px-10 rounded-2xl transition-all transform active:scale-95 shadow-lg shadow-green-500/20">
+            🛡️ Open Shield Scheduler
+        </a>
+      </div>
+      {% endif %}
+
     {% endif %}
   </div>
 </div>
@@ -78,7 +83,7 @@
             datasets: [{
                 label: 'Cost ($)',
                 data: {{ costs|safe }},
-                borderColor: '#10b981', // Emerald Green
+                borderColor: '#10b981',
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
                 fill: true,
                 tension: 0.4

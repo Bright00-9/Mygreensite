@@ -17,6 +17,7 @@ from django.contrib import messages
 from django.db.models import Sum
 
 
+@login_required
 def dashboard_home(request):
     # Get the last 7 days of data
     last_week = timezone.now() - timedelta(days=7)
@@ -26,21 +27,21 @@ def dashboard_home(request):
     ).order_by('timestamp')
 
     # Formatting data for Chart.js
-    labels = [s.timestamp.strftime("%a") for s in history] # "Mon", "Tue", etc.
-    costs = [s.total_cost for s in history]
+    labels = [s.timestamp.strftime("%a") for s in history]
+    costs = [float(s.total_cost) for s in history]
     carbon = [s.total_carbon for s in history]
 
     # Latest Score for the Gauge
     latest = history.last()
+
     # Simplified Eco-Score (0-100). Lower carbon = higher score.
     eco_score = max(0, 100 - (latest.total_carbon * 10)) if latest else 0
 
-    context = {
-
-    }
-    
     has_connection = CloudConnection.objects.filter(user=request.user).exists()
-    
+
+    # ✅ Fetch the actual account object to get its pk
+    account = CloudConnection.objects.filter(user=request.user).first()
+
     # Only try to fetch scans if a connection exists
     latest_scan = None
     if has_connection:
@@ -48,6 +49,7 @@ def dashboard_home(request):
 
     context = {
         'has_connection': has_connection,
+        'account': account,  # ✅ Added so template can use account.id
         'scan': latest_scan,
         'labels': labels,
         'costs': costs,
@@ -56,7 +58,7 @@ def dashboard_home(request):
         'latest': latest
     }
     
-    return render(request, 'dashboard/index.html')
+    return render(request, 'dashboard/index.html', context)  # ✅ Fixed: was missing context
 
 # dashboard/views.py
 
