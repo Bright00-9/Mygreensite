@@ -61,7 +61,6 @@ class ScanSummaries(models.Model):
         ordering = ['-timestamp']
         
 
-
 class ScanSchedule(models.Model):
     # Link to the user's connected cloud account
     user = models.OneToOneField(
@@ -70,7 +69,6 @@ class ScanSchedule(models.Model):
         related_name='shield_config'
     )
     
-    # The AWS service the user wants to protect
     SERVICE_CHOICES = [
         ('EC2', 'EC2 Zombie Hunter'),
         ('S3', 'S3 Storage Guard'),
@@ -83,20 +81,18 @@ class ScanSchedule(models.Model):
         default='EC2'
     )
     
-    # Status and stats
     is_active = models.BooleanField(default=False)
     last_scan_date = models.DateTimeField(null=True, blank=True)
-    total_carbon_saved = models.FloatField(default=0.0) # For your GreenOps metrics
+    total_carbon_saved = models.FloatField(default=0.0)
     
-    # Link to the actual Celery Periodic Task
-    periodic_task = models.OneToOneField(
-        PeriodicTask, 
-        on_delete=models.SET_NULL, 
+    # tore just the task name as a string instead of a ForeignKey
+    periodic_task_name = models.CharField(
+        max_length=200, 
         null=True, 
         blank=True
     )
 
     def __str__(self):
-        return f"Shield for {self.account.display_name} ({self.target_service})"
+        return f"Shield for {self.user} ({self.target_service})"
 
  
