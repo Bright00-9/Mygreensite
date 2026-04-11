@@ -60,7 +60,11 @@ def dashboard_home(request):
     
     return render(request, 'dashboard/index.html', context)  # ✅ Fixed: was missing context
 
-# dashboard/views.py
+def account_context(request):
+    if request.user.is_authenticated:
+        account = CloudConnection.objects.filter(user=request.user).first()
+        return {'account': account}
+    return {'account': None}
 
 def calculate_eco_score(total_carbon):
     # Let's say 10kg CO2e is our "Max" limit for a good score
