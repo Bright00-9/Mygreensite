@@ -153,7 +153,7 @@ def terminate_resource(request, zombie_id):
 @login_required
 def shield_view(request, pk):
     # 1. Fetch the specific Cloud Account belonging to the logged in user
-    account = CloudConnection.objects.filter(user=request.user)
+    account = get_object_or_404(CloudConnection, pk=pk, user=request.user)  # ✅ Fixed
     
     # 2. Get or create the ScanSchedule config linked to this cloud account
     config, created = ScanSchedule.objects.get_or_create(user=account)
@@ -165,43 +165,38 @@ def shield_view(request, pk):
     existing_task = PeriodicTask.objects.filter(name=task_name).first()
 
     if request.method == "POST":
-        # Get the selected AWS service and frequency from the form
         selected_resource = request.POST.get('resource')
         
         try:
             minutes = int(request.POST.get('frequency'))
         except (ValueError, TypeError):
-            minutes = 60  # Fallback default frequency
+            minutes = 60
 
-        # Create or get the interval schedule (the "when")
         schedule, _ = IntervalSchedule.objects.get_or_create(
             every=minutes,
             period=IntervalSchedule.MINUTES,
         )
 
-        # Create or update the periodic task in celery beat
         task, _ = PeriodicTask.objects.update_or_create(
             name=task_name,
             defaults={
-                'interval': schedule,  # ✅ Fixed: was 'scanschedule'
+                'interval': schedule,
                 'task': 'dashboard.tasks.shield_scheduler_trigger',
-                'args': json.dumps([request.user.id, selected_resource]),  # ✅ Fixed: was 'user.id'
+                'args': json.dumps([request.user.id, selected_resource]),
                 'enabled': True,
             }
         )
 
-        # Update the config with selected service
-        config.target_service = selected_resource  # ✅ Fixed: was 'service'
-        config.periodic_task_name = task_name  # ✅ Fixed: store name string instead of FK
+        config.target_service = selected_resource
+        config.periodic_task_name = task_name
         config.is_active = True
         config.save()
 
         messages.success(request, f"Shield active for {selected_resource}!")
         return redirect('shield_scheduler', pk=pk)
 
-    # 5. Present the template with context
     context = {
-        'account': account,  # ✅ Fixed: was 'user' which is confusing
+        'account': account,
         'config': config,
         'task': existing_task,
         'current_service': json.loads(existing_task.args)[1] if existing_task and existing_task.args else None
