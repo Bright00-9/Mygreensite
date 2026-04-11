@@ -36,6 +36,10 @@ INSTALLED_APPS = [
     'users',
 ]
 
+MIGRATION_MODULES = {
+    'django_celery_beat': None,
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
