@@ -6,23 +6,51 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <title>Komado GreenOps</title>
     <style>body { background-color: #0f172a; color: white; font-family: sans-serif; }</style>
 </head>
-<body class="p-4 pb-24">
+
+
+
+<body>
+
+  <!-- Ambient Background -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- ── Navbar ─────────────────────────────────────────── -->
+  <nav class="navbar">
+    <a href="{% url 'home' %}" class="nav-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" rx="8" fill="rgba(0,229,160,0.1)"/>
+          <path d="M8 18L14 10L20 18L14 26L8 18Z" fill="#00e5a0" opacity="0.9"/>
+          <path d="M16 18L22 10L28 18L22 26L16 18Z" fill="#0098ff" opacity="0.7"/>
+        </svg>
+      </div>
+      <span class="logo-text">KOMADO</span>
+    </a>
+
+    <div class="nav-actions">
+      {% if request.user.is_authenticated %}
+        <span style="font-size:0.85rem; color:var(--muted);">Hi, {{ request.user.username }}!
+        </span>
+        <a href="{% url 'dashboard:export' %}" class="bg-slate-800 border border-slate-600 px-3 py-1 rounded text-xs">PDF</a>
+        <a href="{% url 'users:logout' %}" class="btn btn-ghost">Sign Out</a>
+      {% else %}
+        <a href="{% url 'users:login' %}" class="btn btn-ghost">Sign In</a>
+        <a href="{% url 'users:register' %}" class="btn btn-primary">Get Started</a>
+      {% endif %}
+    </div>
+  </nav>
+
   <div>
     {% if request.user.is_authenticated %}
-      <div class="cont1">
-        <span>Hi, {{ request.user.username }}!</span>
-        <a href="{% url 'users:logout' %}"><button class="out-but">Logout</button></a>
-      </div><br>
-      <div>
         <nav class="flex justify-between items-center mb-6">
-          <h1 class="text-green-400 font-bold text-xl">KOMADO</h1>
-          <a href="{% url 'dashboard:export' %}" class="bg-slate-800 border border-slate-600 px-3 py-1 rounded text-xs">PDF</a>
-          <div class="p-6 bg-white/5 rounded-3xl border border-white/10 shadow-xl">
             {% if has_connection %}
               <form action="{% url 'dashboard:run_manual_scan' %}" method="POST">
                 {% csrf_token %}
@@ -114,28 +142,113 @@
         {% endif %}
         <a href="{% url 'dashboard:forum' %}" class="text-slate-400"><i class="fas fa-comment"></i></a>
       </footer>
+      
     {% else %}
       {% if request.path == '/' %}
-        <a href="{% url 'users:login' %}">Login</a>
-        <a href="{% url 'users:register' %}">Register</a>
-        <div class="glass-card">
-          <h1 class="text-green-400 font-bold text-xl">KOMADO</h1>
-          <h1>Explore The Cloud & Share Cool Ideas</h1><br>
-          <button class="cool-btn">____ Get Started ____</button>
-          <div class="glass-card">
-            <span class="quest">Already have an account?</span><br>
-            <a href="{% url 'users:login' %}"><button class="cool-btn">login</button></a>
-            <br><br><br><br>
-            <span class="quest">Get registered</span><br>
-            <a href="{% url 'users:register' %}"><button class="cool-btn">Register</button></a>
+        {% block landing %}
+          <!
+          <section class="hero">
+            <div class="hero-eyebrow">
+              <span class="dot"></span>
+                Cloud Intelligence Platform
+            </div>
+            <h1 class="hero-title">
+                Command Your<br/>
+              <span class="line-accent">Cloud. Smartly.</span>
+            </h1>
+            <p class="hero-sub">
+              KOMADO unifies FinOps cost control and GreenOps sustainability into
+              one elegant orchestration layer — so your infrastructure works for you,
+              not against you.
+            </p>
+            <div class="hero-cta">
+              <a href="{% url 'users:register'    %}" class="btn btn-primary btn-lg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  Get Started Free
+                </a>
+                <a href="{% url 'users:login' %}" class="btn btn-outline btn-lg">
+                  Sign In
+                </a>
+              </div>
+      <!-- Stats -->
+            <div class="stats-strip">
+                <div class="stat-item">
+                  <div class="stat-value">40%</div>
+                  <div class="stat-label">Cost Reduction</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                  <div class="stat-value">3×</div>
+                  <div class="stat-label">Faster Decisions</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                  <div class="stat-value">99.9%</div>
+                  <div class="stat-label">Uptime</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                  <div class="stat-value">CO₂↓</div>
+                  <div class="stat-label">Green Ops Built-in</div>
+                </div>
+            </div>
+          </section>
+    <!-- Features -->
+          <section class="features">
+            <p class="section-label">Why KOMADO</p>
+            <h2 class="section-title">Everything you need to<br/>orchestrate with confidence</h2>
+            <div class="cards-grid">
+              <div class="card">
+                <div class="card-icon">💰</div>
+                <div class="card-title">FinOps Intelligence</div>
+                <div class="card-desc">Real-time cost visibility across all providers. Automated anomaly detection and budget guardrails that actually prevent overspend.</div>
+              </div>
+              <div class="card">
+                <div class="card-icon">🌿</div>
+                <div class="card-title">GreenOps Engine</div>
+                <div class="card-desc">Track carbon footprint per workload. Route compute to greener regions automatically and meet your sustainability targets.</div>
+              </div>
+              <div class="card">
+                <div class="card-icon">⚡</div>
+                <div class="card-title">Smart Orchestration</div>
+                <div class="card-desc">Policy-driven workload placement across AWS, GCP, and Azure. Optimize for cost, performance, or carbon — your call.</div>
+              </div>
+              <div class="card">
+                <div class="card-icon">📊</div>
+                <div class="card-title">Unified Dashboard</div>
+                <div class="card-desc">One pane of glass for all cloud resources. Drill from org-level spend to individual resource costs in seconds.</div>
+              </div>
+              <div class="card">
+                <div class="card-icon">🔔</div>
+                <div class="card-title">Proactive Alerts</div>
+                <div class="card-desc">Intelligent threshold alerts before issues become outages or budget breaches. Slack, email, PagerDuty — wherever your team is.</div>
+              </div>
+              <div class="card">
+                <div class="card-icon">🔐</div>
+                <div class="card-title">Secure by Default</div>
+                <div class="card-desc">Role-based access, audit logging, and SOC2-ready infrastructure. Your cloud data stays yours, always encrypted at rest.</div>
+              </div>
+            </div>
+          </section>
+        {% endblock landing %}
+      
+        <footer class="footer">
+          <div class="footer-brand">KOM<span>A</span>DO</div>
+          <p class="footer-copy">© {% now "Y" %} KOMADO. All rights reserved.</p>
+          <div class="footer-links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Docs</a>
+            <a href="#">Status</a>
           </div>
-        </div>
-      {% endif %}
-    {% endif %}
-  </div>
+        </footer>
+      {% endif %}  
+    {% endif %} 
+      
   <main>
     {% block content %}{% endblock %}
   </main>
+  
   {% if messages %}
       {% for message in messages %}
           <div id="toast" class="fixed top-5 right-5 bg-green-500 text-black px-6 py-4 rounded-2xl shadow-2xl font-bold z-50 animate-bounce">
@@ -144,13 +257,34 @@
       {% endfor %}
   {% endif %}
   
+  
   <script>
-      setTimeout(() => {
-          const toast = document.getElementById('toast');
-          if (toast) toast.style.display = 'none';
-      }, 4000);
+    document.addEventListener('DOMContentLoaded', function () {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(function (alert) {
+        setTimeout(function () {
+          alert.style.transition = 'opacity 0.5s, transform 0.5s';
+          alert.style.opacity = '0';
+          alert.style.transform = 'translateX(60px)';
+          setTimeout(function () { alert.remove(); }, 500);
+        }, 4000);
+      });
+    });
+
+    setTimeout(() => {
+        const toast = document.getElementById('toast');
+        if (toast) toast.style.display = 'none';
+    }, 4000);
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
 
 
